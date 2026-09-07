@@ -5,7 +5,7 @@
    ================================================================== */
 import { readFileSync } from 'node:fs';
 
-const html = readFileSync(new URL('./myrikaka-app.html', import.meta.url), 'utf8');
+const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 
 /* ---------- ดึงโค้ดส่วน "ดึงข้อมูลจริง" ออกจากไฟล์เว็บ (โค้ดตัวจริง ไม่ใช่สำเนา) ---------- */
 const secStart = html.indexOf('ดึงข้อมูลสินค้าจริงจากลิงก์ต้นทาง');
@@ -97,12 +97,14 @@ check('priceJpy (ดิบ) = ราคาที่ลดแล้ว 4,208 จ�
 check('fullPriceJpy = ราคาเต็ม 4,950 จาก 標準価格', +d.fullPriceJpy === 4950, 'ได้: '+d.fullPriceJpy);
 const ds = dFromStock(URL_TEST, {ok:true, name:'ホビーストック | テスト', priceJpy:4208, fullPriceJpy:4950,
   discountPct:15, release:'01/2027', sizeMm:110, image:'https://x/y.jpg', deadline:'2026-09-14'});
-check('ตอนเพิ่มสินค้า: ราคาหลัก = ราคาเต็ม 4,950', +ds.priceJpy === 4950, 'ได้: '+ds.priceJpy);
-check('ตอนเพิ่มสินค้า: ส่วนลดของเว็บติดมาด้วย', +ds.discountPct === 15, 'ได้: '+ds.discountPct+'%');
+check('ตอนเพิ่มสินค้า: ราคาหลัก = ราคาขายจริง 4,208 (ห้ามใช้ราคาเงา 4,950)', +ds.priceJpy === 4208, 'ได้: '+ds.priceJpy);
+check('ตอนเพิ่มสินค้า: ราคาเต็ม 4,950 แยกไว้ fullPriceJpy ไว้ขีดฆ่า', +ds.fullPriceJpy === 4950, 'ได้: '+ds.fullPriceJpy);
+check('ตอนเพิ่มสินค้า: ส่วนลดของเว็บติดมาด้วย (เก็บไว้ดู)', +ds.discountPct === 15, 'ได้: '+ds.discountPct+'%');
 check('ชื่อจากผลเซิร์ฟเวอร์ถูกตัดชื่อเว็บ', !SITE_WORD_RE.test(ds.nameJp||''), ds.nameJp);
-/* กัน regression: ราคาเต็มมาเป็นราคาหลักแล้ว — ห้ามเติม f-listprice ซ้ำ (แต่ f-disc ต้องเติม) */
-check('เติมส่วนลดของเว็บอัตโนมัติ (ราคาเต็ม × ส่วนลด)', /getElementById\('f-disc'\)\.value\s*=/.test(html));
-check('ไม่เติม f-listprice อัตโนมัติแล้ว (ราคาเต็มอยู่ที่ราคาหลัก)', !/getElementById\('f-listprice'\)\.value\s*=/.test(html));
+/* กัน regression: ราคาหลัก = ราคาขายจริง — ราคาเต็มไปเติมช่อง f-listprice (ขีดฆ่า)
+   ห้ามเติม f-disc จากส่วนลดเว็บ เพราะราคาหลักลดมาแล้ว — เติมต่อ = ลดสองชั้น */
+check('เติมช่องราคาขีดฆ่า f-listprice จากราคาเต็มอัตโนมัติ', /getElementById\('f-listprice'\)\.value\s*=\s*first\.fullPriceJpy/.test(html));
+check('ไม่เติม f-disc จากส่วนลดของเว็บ (กันลดซ้ำสองชั้น)', !/getElementById\('f-disc'\)\.value\s*=\s*first\.discountPct/.test(html));
 
 console.log('\n--- ตัดชื่อเว็บ (cleanName) ---');
 const t1 = cleanName('ホビーストック | 【予約特別価格】メガハウス テスト商品');
@@ -115,6 +117,37 @@ check('ชื่อเว็บหน้าถูกตัด แต่ชื่
   !/ホビーストック|hobby ?stock/i.test(t3) && /GOOD SMILE COMPANY/i.test(t3), t3);
 const t4 = cleanName('Hobby Stock | GOOD SMILE COMPANY ウマ娘');
 check('ชื่อเว็บภาษาอังกฤษหน้าถูกตัดเช่นกัน', !/hobby ?stock/i.test(t4) && /GOOD SMILE COMPANY/i.test(t4), t4);
+
+console.log('\n--- อมิอามิ ENG (ตัวอย่างจากหน้าจริง FIGURE-207990 ที่เจ้าของร้านแจ้ง) ---');
+/* ปัญหาที่แจ้งมา: ได้ราคา 15,800 (ราคาเงา/ราคาเต็ม) ทั้งที่ขายจริง 14,220
+   และวันวาง 09/2026 (วันที่บนหน้าเว็บ) ทั้งที่วางจำหน่ายจริง 11/2027 */
+const ENG = [
+  'Title: Hyper Body GODDESS OF VICTORY: NIKKE Hyper Body Viper - Toxic Rabbit Posable Figure(Pre-order)',
+  '',
+  'Good Smile Arts Shanghai',
+  '',
+  '15,800JPY 14,220 JPY Save 1,580 JPY',
+  '',
+  'Pre-order (Release Date: Nov-2027)',
+  '',
+  '## About this item',
+  '',
+  'Release Date Nov-2027 List Price 15,800 JPY Shop Code FIGURE-207990 JAN code 6927254800252 Brand[Good Smile Arts Shanghai]',
+].join('\n');
+const dE = scrapeParse('https://www.amiami.com/eng/detail/?gcode=FIGURE-207990', ENG);
+check('ราคาขายจริง = 14,220 (ไม่ตกไปเป็นราคาเงา 15,800)', +dE.priceJpy === 14220, 'ได้: '+dE.priceJpy);
+check('ราคาเต็ม 15,800 แยกไว้ fullPriceJpy (ขีดฆ่า)', +dE.fullPriceJpy === 15800, 'ได้: '+dE.fullPriceJpy);
+check('วันวางจากป้าย Release Date = 11/2027', dE.release === '11/2027', 'ได้: '+dE.release);
+check('ชื่อไม่ติดชื่อเว็บ amiami', !/amiami/i.test(dE.nameJp||''), String(dE.nameJp).slice(0,60));
+
+console.log('\n--- กันวันที่อื่นบนหน้าเว็บดองเป็นเดือนวางจำหน่าย ---');
+const dToday = scrapeParse('https://www.hobbystock.jp/item/view/hby-icf-00008572',
+  '更新 2026年9月7日 (月) … この商品は、2026年9月14日まで早期キャンセル可能です');
+check('2026年9月7日/14日 (มีวันที่) ไม่ถูกหยิบเป็นเดือนวางจำหน่าย', dToday.release === '', 'ได้: "'+dToday.release+'"');
+const dRel = scrapeParse('https://www.hobbystock.jp/item/view/x', '発売予定日：2027年11月（予定） 販売価格 4,950円');
+check('発売予定日：2027年11月 → 11/2027', dRel.release === '11/2027', 'ได้: '+dRel.release);
+const dRel2 = scrapeParse('https://www.hobbystock.jp/item/view/x', '標準価格 4,950円 2027年11月中旬発売予定');
+check('2027年11月中旬 (ปีเดือนล้วน) → 11/2027', dRel2.release === '11/2027', 'ได้: '+dRel2.release);
 
 console.log('\n--- กติกาค่าส่ง/รายละเอียด (กัน regression) ---');
 check('ค่าส่งนอกมาไทยเริ่มต้น 0 (ไม่ใช่ 900)', !/id="f-shipjp"[^>]*value="900"/.test(html));
@@ -132,22 +165,24 @@ try {
   const dA = scrapeParse('https://www.amiami.com/eng/detail/?gcode=GOODS-04853120', tA);
   check('AmiAmi: เจอข้อมูลสินค้า', dA.found === true);
   check('AmiAmi: ชื่อไม่ติด amiami', !/amiami/i.test(dA.nameJp||''), String(dA.nameJp).slice(0,60));
-  check('AmiAmi: ราคา = 2,200 JPY', +dA.priceJpy === 2200, 'ได้: '+dA.priceJpy);
+  /* ราคาขายจริงหลังส่วนลดหน้าเว็บ (ตอนนี้หน้าจริงลด 10% จาก 2,200 เหลือ 1,980 — ต้องได้ราคาหลังลด) */
+  check('AmiAmi: ราคา = 1,980 JPY (ราคาขายจริงหลังลด 10%)', +dA.priceJpy === 1980, 'ได้: '+dA.priceJpy);
 } catch(e) { console.log('⚠️ ทดสอบ AmiAmi ข้าม (เน็ต/ตัวอ่านขัดข้อง):', e.message); }
 
-console.log('\n--- สูตรราคาช้อปปี้ (โค้ดตัวจริง: ค่าสินค้า+ส่งไทย+เอกสาร 10฿ แล้วคูณตัวคูณ) ---');
+console.log('\n--- สูตรราคาช้อปปี้ (โค้ดตัวจริง: ราคาขายจริง+ส่งไทย+เอกสาร 10฿ แล้วคูณตัวคูณ) ---');
 console.log(`อัตราหักรวม ${(spFeeRate()*100).toFixed(2)}% · ตัวคูณ ${spMul().toFixed(3)} · ค่าเอกสาร/คงที่ ${spFixed()}฿`);
-/* โมเดลใหม่ตามเจ้าของร้าน: ราคาเต็ม×เรท+ส่งนอก = ราคาเต็มบาท (ขีดฆ่า) → หักส่วนลดเว็บ → ราคาขายจริง → +ส่งไทย+เอกสาร 10฿ → ×1.495 */
-const fullYen = 4950, disc = 15, shipJp = 900, shipTh = 60;
-const base = fullYen * RATE;
-const webFull = Math.ceil((base + shipJp)/10)*10;
-const webNet = Math.round(webFull * (1 - disc/100));
+/* โมเดลราคาตามเจ้าของร้าน (ปรับ 2026-09): ราคาหลัก = ราคาขายจริงของเว็บต้นทาง (4,208 ไม่ใช่ราคาเงา 4,950)
+   → ขายหน้าเว็บบาท = ขายจริง×เรท + ส่งนอก · ขีดฆ่า = ราคาเต็ม×เรท + ส่งนอก (จาก listPriceJpy)
+   → +ส่งไทย+เอกสาร 10฿ → ×1.495 */
+const saleYen = 4208, fullYen = 4950, shipJp = 900, shipTh = 60;
+const webNet  = Math.ceil((saleYen * RATE + shipJp)/10)*10;
+const strike  = Math.ceil((fullYen * RATE + shipJp)/10)*10;
 const sp = spList(webNet + shipTh);
 check('ตัวคูณ ≈ 1.495', Math.abs(spMul() - 1.495) < 0.002, spMul().toFixed(4));
-check('ราคาเต็มบาท (ขีดฆ่า) = 4,950×0.255 + 900 = ฿2,170', webFull === 2170, 'ได้: ฿'+webFull.toLocaleString());
-check('ราคาหลังลด 15% = ฿1,845 (ราคาขายจริงหน้าเว็บ)', webNet === 1845, 'ได้: ฿'+webNet.toLocaleString());
-check('ช้อปปี้ = (1,845 + 60 + 10) × 1.495 ≈ ฿2,864',
-  sp === Math.ceil((webNet + shipTh + spFixed()) * spMul()) && sp >= 2860 && sp <= 2870, 'ได้ ฿'+sp.toLocaleString());
+check('ราคาขายหน้าเว็บ = 4,208×0.255 + 900 = ฿1,980 (ต้นทุนจริงที่จ่าย)', webNet === 1980, 'ได้: ฿'+webNet.toLocaleString());
+check('ราคาเต็มบาท (ขีดฆ่า) = 4,950×0.255 + 900 = ฿2,170', strike === 2170, 'ได้: ฿'+strike.toLocaleString());
+check('ช้อปปี้ = (1,980 + 60 + 10) × ตัวคูณ ≈ ฿3,066',
+  sp === Math.ceil((webNet + shipTh + spFixed()) * spMul()) && sp >= 3064 && sp <= 3067, 'ได้ ฿'+sp.toLocaleString());
 
 console.log(`\n===== ผลรวม: ผ่าน ${pass} · ไม่ผ่าน ${fail} =====`);
 process.exit(fail ? 1 : 0);

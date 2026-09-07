@@ -9872,7 +9872,7 @@ function renderAdmin(){
   const live = products.filter(p=>!p.hidden).sort((a,b)=>(b.id||0)-(a.id||0));  /* ใหม่ → เก่า */
   const shown = live.filter(p=>adminMatch(p, adminQ));
   document.getElementById('s-admin').innerHTML =
-  `<div class="shopnav"><div class="logo">🎀 Admin Dashboard <span style="font-size:.66rem;font-weight:400;opacity:.65;background:rgba(255,255,255,.35);border-radius:99px;padding:.1rem .5rem;">v.0906-r7</span></div><div class="links"><span>จัดการสินค้า Myrikaka</span></div></div>
+  `<div class="shopnav"><div class="logo">🎀 Admin Dashboard <span style="font-size:.66rem;font-weight:400;opacity:.65;background:rgba(255,255,255,.35);border-radius:99px;padding:.1rem .5rem;">v.0907-r8</span></div><div class="links"><span>จัดการสินค้า Myrikaka</span></div></div>
   ${staffBar()}
   <div class="statrow">
     <div class="stat"><div class="k">สินค้าทั้งหมด</div><div class="v">${live.length}</div></div>
@@ -9947,9 +9947,9 @@ function renderAdmin(){
   <div class="zone">
     <div class="zt">③ ราคาและต้นทุน</div>
     <div class="zrow c6">
-      <div class="fg"><label for="f-price">ราคาต้นทาง * — ราคาเต็มก่อนลด (ส่วนลดใส่ช่องถัดไป)</label>
+      <div class="fg"><label for="f-price">ราคาต้นทาง * — ราคาขายจริงที่เว็บคิดเงิน (หลังส่วนลด เช่น 14,220 ไม่ใช่ 15,800)</label>
         <input id="f-price" type="number" min="0" step="0.01" value="0" oninput="fPriceCalc()"></div>
-      <div class="fg"><label for="f-listprice">ราคาเต็มแสดงขีดฆ่าแบบอื่น (¥) — ไม่จำเป็นต้องใส่</label>
+      <div class="fg"><label for="f-listprice">ราคาเต็มก่อนลดของเว็บต้นทาง (¥) — ไว้ขีดฆ่าหน้าสินค้า ระบบเติมให้เอง</label>
         <input id="f-listprice" type="number" min="0" step="0.01" value="0" oninput="fPriceCalc()">
         <div class="hint">ปกติเว้นว่าง — ระบบขีดฆ่าจากราคาเต็ม + ส่วนลดให้เองแล้ว</div></div>
       <div class="fg"><label for="f-shipjp">ค่าส่งนอก → ไทย</label>
@@ -10075,7 +10075,9 @@ function pvHTML(list){
   return list.map(d=>{
     const full = roundUp10(d.priceJpy*RATE + shipJp);
     return `<div class="pv-item">
-      <div class="pv-img">${esc(d.emoji)}</div>
+      <div class="pv-img">${(d.imgData||d.img)
+        ? `<img src="${esc(d.imgData||d.img)}" alt="" style="width:96px;height:96px;object-fit:cover;border-radius:10px;" onerror="this.replaceWith(document.createTextNode('${esc(d.emoji)}'));">`
+        : esc(d.emoji)}</div>
       <div>
         ${!d.found?'<div class="pv-row" style="color:var(--warn);"><b>⚠️ หมายเหตุ</b><span>ลิงก์นี้ยังไม่มีข้อมูลตัวอย่าง เพิ่มแล้วกรอกเองได้เลย</span></div>':''}
         <div class="pv-row"><b>ชื่อสินค้า</b><span>${esc(d.charName?d.nameTh+' — '+d.charName:d.nameTh)}</span></div>
@@ -10109,6 +10111,8 @@ function wpDetailToggle(){ wpDetOpen = !wpDetOpen; fPriceCalc(); }
 /* คิดราคาบาทสด ๆ ตอนกรอก — รองรับทั้งเยนและหยวน */
 function fPriceCalc(){
   const cur = fv('f-cur'), n = +fv('f-price')||0, shipJp = +fv('f-shipjp')||0;
+  const disc   = +fv('f-disc')||0;   /* ส่วนลดพิเศษของร้านเอง — ต้องประกาศก่อนข้อความ "วิธีคิด" ด้านล่างที่อ้างถึง */
+  const webNet = fBaseWeb();         /* ราคาขายหน้าเว็บ (หลังหักส่วนลดร้าน) */
   const base = cur==='cny' ? n * (+CFG.cnyRate||5.9) : cur==='thb' ? n : n * RATE;
   const out = document.getElementById('f-price-out');
   const rateT = cur==='cny' ? `หยวน @${CFG.cnyRate}` : cur==='thb' ? 'ตั้งราคาบาทเอง' : `เยน @${RATE}`;
@@ -10121,8 +10125,6 @@ function fPriceCalc(){
   if (hint) hint.textContent = `เรทปัจจุบัน เยน ${RATE} · หยวน ${CFG.cnyRate}`;
   /* ---------- ราคาที่จะขายในช้อปปี้ ----------
      ต้องเป็นราคาสุทธิเต็ม: ค่าสินค้า + ค่าส่งต่างประเทศ + ค่าส่งในไทย + บริการเสริม (ตีลังไม้ ล็อตจีน) */
-  const disc   = +fv('f-disc')||0;
-  const webNet = fBaseWeb();
   const shipTh = +fv('f-shipth')||0;
   const isCn   = fv('f-lot') === 'cn';
   const crate  = isCn ? (+fv('f-crate')||0) : 0;
@@ -10352,8 +10354,27 @@ function scrapeParse(url, text){
   const out = {...BLANK, site:siteOf(url), code:codeOf(url), found:false, charName:''};
   const yen = s => { const m = String(s||'').replace(/,\s?/g,'').match(/[¥￥]\s*(\d{3,8})|(\d{3,8})\s*(?:円|JPY)/);
     return m ? +(m[1]||m[2]) : 0; };
-  const rel = s => { const m = String(s||'').match(/20\d{2}\s*[年\/\-]\s*(\d{1,2})/);
-    return m ? `${String(+m[1]).padStart(2,'0')}/${m[0].match(/20\d{2}/)[0]}` : ''; };
+  /* เดือนวางจำหน่าย — ยึดป้ายกำกับเท่านั้น (発売日/Release Date) หรือ "ปีเดือนล้วน"
+     ห้ามหยิบวันที่ที่มี "วัน" กำกับ เช่น 2026年9月7日 = วันที่บนหน้าเว็บ/วันปิดรับ ไม่ใช่เดือนวางจำหน่าย
+     (เคยพัง: ดึง FIGURE-207990 ได้ 09/2026 = เดือนที่หน้าเว็บอัปเดต ทั้งที่ของจริงคือ 11/2027) */
+  const MONTH_EN = {jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+  const rel = s => {
+    const t = String(s||''); let m;
+    /* 1) มีป้ายกำกับชัดเจน — เชื่อได้สุด มีวันที่กำกับก็ยังใช้เดือนได้ */
+    m = t.match(/(?:発売日|発売予定日|発売予定|発売時期|発売)[^\d]{0,14}(20\d{2})\s*[年\/\-.]\s*(\d{1,2})/)
+     || t.match(/Release\s*Date[^\d]{0,14}([A-Za-z]{3})[a-z]*\.?[-\s.,]*(20\d{2})/i);
+    if (m){
+      const y = m[0].match(/20\d{2}/)[0];
+      /* regex แรกจับ "2027年11" (กลุ่ม 2 = เดือน) · regex ที่สองจับ "Nov-2027" (กลุ่ม 1 = ชื่อเดือน) */
+      const mo = MONTH_EN[String(m[1]).slice(0,3).toLowerCase()] ?? +m[2];
+      if (mo >= 1 && mo <= 12) return `${String(mo).padStart(2,'0')}/${y}`;
+    }
+    /* 2) ปีเดือนล้วน 2027年11月 — ตัดที่ตามด้วยวันที่ (2026年9月7日 = วันที่ของหน้าเว็บ) */
+    m = t.match(/(20\d{2})\s*年\s*(\d{1,2})\s*月/);
+    if (m && +m[2] >= 1 && +m[2] <= 12 && !/^\s*\d{0,2}\s*日/.test(t.slice(m.index + m[0].length)))
+      return `${String(+m[2]).padStart(2,'0')}/${m[1]}`;
+    return '';
+  };
   let title='', img='', price=0, fullPrice=0, release='', desc='', bodyText='';
   if (/<\/?(html|body|meta|div)\b/i.test(String(text).slice(0, 3000))){
     const doc = new DOMParser().parseFromString(text, 'text/html');
@@ -10362,26 +10383,44 @@ function scrapeParse(url, text){
     desc  = meta('og:description') || meta('description') || '';
     img   = meta('og:image') || meta('twitter:image') || '';
     bodyText = doc.body ? doc.body.textContent : '';
-    /* ราคาขายจริงมีป้าย 販売価格（税込） ส่วน 標準価格 คือราคาเต็ม — เก็บแยกกันไว้ขีดฆ่า */
+    /* ราคาขายจริงมีป้าย 販売価格（税込） ส่วน 標準価格/定価 คือราคาเต็ม — เก็บแยกกันไว้ขีดฆ่า */
     const saleM = /販売価格（?[^）]*）?[^\d]{0,30}([\d,]{3,9})\s*円/.exec(bodyText);
-    const stdM  = /標準価格（?[^）]*）?[^\d]{0,30}([\d,]{3,9})\s*円/.exec(bodyText);
+    const stdM  = /標準価格（?[^）]*）?[^\d]{0,30}([\d,]{3,9})\s*円/.exec(bodyText)
+               || /定価[^\d]{0,20}([\d,]{3,9})\s*円/.exec(bodyText);
     if (saleM) price = +saleM[1].replace(/,/g,'') || 0;
     if (stdM)  fullPrice = +stdM[1].replace(/,/g,'') || 0;
     if (!price) price = +String(meta('product:price:amount')||meta('og:price:amount')||meta('price')).replace(/[^\d.]/g,'') || 0;
     if (!price){ const el = doc.querySelector('[itemprop="price"]');
       if (el) price = +String(el.getAttribute('content')||el.textContent||'').replace(/[^\d.]/g,'') || 0; }
-    if (!price) price = yen(bodyText.slice(0, 6000));
-    if (!release) release = rel(bodyText.slice(0, 8000));
+    if (!price){
+      /* ตัวหาราคาแบบกลาง ๆ ต้องมองข้ามราคาขีดฆ่า (<del>/<s>/<strike> = ราคาเงา) ไม่งั้นได้ราคาเต็มมาแทน */
+      const noDel = new DOMParser().parseFromString(
+        String(text).replace(/<(?:del|s|strike)\b[^>]*>[\s\S]*?<\/(?:del|s|strike)>/gi, ' '), 'text/html');
+      price = yen(((noDel.body ? noDel.body.textContent : '')).slice(0, 6000));
+    }
+    if (!release) release = rel(bodyText.slice(0, 20000));
   } else {
     /* ข้อความล้วน (ตัวกลางแบบอ่านเว็บ) — บรรทัด "Title: ..." */
-    title = (String(text).match(/^Title:\s*(.+)$/m) || [])[1] || '';
-    price = yen(String(text).slice(0, 6000));
-    release = rel(String(text).slice(0, 8000));
+    const raw = String(text);
+    title = (raw.match(/^Title:\s*(.+)$/m) || [])[1] || '';
+    bodyText = raw;
+    /* ราคา AmiAmi (ENG) หน้าลดราคาแสดงคู่ "15,800JPY 14,220 JPY Save 1,580 JPY"
+       = ราคาเต็ม 15,800 · ราคาขายจริง 14,220 — ต้องแยกให้ถูกตัว (ราคาหลัก = ราคาขายจริงเสมอ) */
+    const pairM = /([\d,]{3,9})\s*JPY\s+([\d,]{3,9})\s*JPY\s+Save/i.exec(raw);
+    if (pairM){
+      fullPrice = +pairM[1].replace(/,/g,'') || 0;
+      price     = +pairM[2].replace(/,/g,'') || 0;
+    }
+    /* ป้าย "List Price 15,800 JPY" คือราคาเต็ม — และห้ามให้ regex "Price … JPY" ชนคำว่า List Price
+       (เคยพัง: ได้ 15,800 มาเป็นราคาหลัก ทั้งที่ขายจริง 14,220) */
+    if (!fullPrice){ const lm = /List\s+Price\s*([\d,]+)\s*JPY/i.exec(raw); if (lm) fullPrice = +lm[1].replace(/,/g,'') || 0; }
+    if (!price){
+      const jpyM = /Price\s*([\d,]+)\s*JPY/.exec(raw.replace(/List\s+Price\s*[\d,]+\s*JPY/ig, ' '));
+      if (jpyM) price = +jpyM[1].replace(/,/g,'') || 0;
+    }
+    if (!price) price = yen(raw.slice(0, 6000));
+    if (!release) release = rel(raw.slice(0, 20000));
     /* ไม่หยิบรูปแรกจากข้อความ — กันรูปคนละรายการ (รูปต้องมาจาก og:image ของสินค้านั้นเท่านั้น) */
-    /* ราคา AmiAmi (ENG) อยู่ลึกในหน้า — หาด้วยป้าย "Price ... JPY" ทั้งหน้าก่อน */
-    const jpyM = /Price\s*([\d,]+)\s*JPY/.exec(String(text));
-    if (jpyM) price = +jpyM[1].replace(/,/g,'') || 0;
-    bodyText = String(text);
   }
   title = String(title).replace(/\s+/g,' ').trim();
   if (!title && !price) return out;
@@ -10423,10 +10462,12 @@ function cleanName(t){
 function dBlank(u){ return {...BLANK, site:siteOf(u), code:codeOf(u), charName:''}; }
 function dFromStock(u, r){
   if (!r || !r.ok) return {...dBlank(u), found:false, note:(r && r.note) || ''};
+  const sale = +r.priceJpy || 0, full = +r.fullPriceJpy || 0;
   return {...dBlank(u), found:true,
     nameJp:cleanName(r.name), nameTh:cleanName(r.name),
-    /* ราคาหลัก = ราคาเต็มก่อนลด (ส่วนลดของเว็บไปหักที่ช่องส่วนลด ให้ลูกค้าเห็นราคาขีดฆ่า) */
-    priceJpy:+r.fullPriceJpy || +r.priceJpy || 0, priceCny:+r.priceCny||0,
+    /* ราคาหลัก = ราคาขายจริงที่เว็บต้นทางคิดเงิน (เช่น 14,220) — ห้ามเอาราคาเต็มก่อนลด (15,800) มาเป็นราคาหลัก
+       ราคาเต็มเก็บไว้ fullPriceJpy ไว้เติมช่องราคาขีดฆ่า (listPriceJpy) ตอนกดเพิ่มสินค้า */
+    priceJpy:sale || full, fullPriceJpy:(full > sale ? full : 0), priceCny:+r.priceCny||0,
     listJpy:0,
     release:(/^\d{1,2}\/\d{4}$/.test(r.release||'') ? r.release : ''),
     img:r.image||'', scale:(+r.sizeMm>0 ? (+r.sizeMm)+'mm' : ''),
@@ -10457,6 +10498,7 @@ async function enrich(u, d){
   if (!best) return d;
   if (best.nameTh && !d.nameTh){ d.nameJp = best.nameJp; d.nameTh = best.nameTh; }
   if (!d.priceJpy && best.priceJpy) d.priceJpy = best.priceJpy;
+  if (!d.fullPriceJpy && best.fullPriceJpy > d.priceJpy) d.fullPriceJpy = best.fullPriceJpy;
   if (!d.release && best.release) d.release = best.release;
   if (best.desc && !d.desc) d.desc = best.desc;
   if (best.scale && !d.scale) d.scale = best.scale;
@@ -10548,7 +10590,10 @@ async function autoFetch(){
     const pr = (fv('f-cur')==='cny' && first.priceCny>0) ? first.priceCny : first.priceJpy;
     if (pr > 0) document.getElementById('f-price').value = pr;
     if (/^\d{1,2}\/\d{4}$/.test(first.release||'') && !fv('f-release').trim()) document.getElementById('f-release').value = first.release;
-    if (+first.discountPct>0 && !(+fv('f-disc')||0)) document.getElementById('f-disc').value = first.discountPct;
+    /* ราคาเต็มก่อนลดของเว็บ (เช่น 15,800) → ช่องราคาขีดฆ่า — ราคาหลักในช่องด้านบนเป็นราคาขายจริงแล้ว */
+    if (+first.fullPriceJpy>0 && !(+fv('f-listprice')||0)) document.getElementById('f-listprice').value = first.fullPriceJpy;
+    /* ห้ามเติมส่วนลดของเว็บลงช่อง f-disc — ช่องนี้คือส่วนลดพิเศษของร้านเอง
+       (ราคาที่ดึงมาเป็นราคาขายจริงหลังส่วนลดเว็บแล้ว เติมต่อ = ลดสองชั้น ขาดทุนทันที) */
     if (/^\d{4}-\d{2}-\d{2}$/.test(first.cancelDeadline||'') && !fv('f-close').value) document.getElementById('f-close').value = first.cancelDeadline;
     const szh = document.getElementById('f-size-hint');
     const szMm = parseInt(first.scale, 10) || 0;
