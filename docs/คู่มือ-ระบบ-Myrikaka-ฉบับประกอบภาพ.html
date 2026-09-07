@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🎀 คู่มือระบบ Myrikaka ฉบับประกอบภาพ — สำหรับผู้ช่วยงาน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#B3242C; --accent-soft:#fbe9ea; --gold:#B08325; --gold-soft:#fff6e0;
+    --ok:#1c7a44; --ok-soft:#e8f5ec; --info:#2563b0; --info-soft:#e8f0fa;
+    --warn:#8a6100; --bad:#b3242c; --bad-soft:#fdeaea;
+    --ink:#2C1A17; --ink2:#5a4a44; --ink3:#8a7c6d; --line:#eadfd0; --surface:#fdfbf8; --surface2:#f6f0e8;
+  }
+  *{box-sizing:border-box}
+  body{font-family:'Sarabun',sans-serif;color:var(--ink);background:#faf7f2;margin:0;line-height:1.85;font-size:16px}
+  .page{max-width:920px;margin:0 auto;padding:1.2rem 1.4rem 5rem}
+  h1,h2,h3,h4{font-family:'Kanit',sans-serif;line-height:1.45}
+  h1{color:var(--accent);font-size:1.9rem;margin:.2rem 0}
+  h2{color:var(--accent);font-size:1.5rem;margin:3.2rem 0 .6rem;padding-bottom:.35rem;border-bottom:3px solid var(--accent-soft)}
+  h3{font-size:1.15rem;margin:1.8rem 0 .5rem}
+  .cover{background:linear-gradient(135deg,#B3242C,#8f1c23);color:#fff;border-radius:22px;padding:2.4rem 2rem;text-align:center;margin:1.4rem 0 2.4rem;box-shadow:0 14px 40px rgba(179,36,44,.25)}
+  .cover .logo{font-size:2.6rem}
+  .cover h1{color:#fff;font-size:2rem;margin:.4rem 0 .2rem}
+  .cover p{opacity:.92;margin:.3rem 0;font-size:1.02rem}
+  .cover .ver{display:inline-block;background:rgba(255,255,255,.18);border-radius:999px;padding:.25rem 1rem;font-size:.85rem;margin-top:.8rem}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:18px;padding:1.4rem 1.6rem;box-shadow:0 2px 10px rgba(120,80,40,.06)}
+  .toc ol{margin:.4rem 0 0;padding-left:1.4rem}
+  .toc a{color:var(--accent);text-decoration:none;font-weight:600}
+  .lead{font-size:1.02rem}
+  .tip{background:var(--gold-soft);border:1px solid #ead9ad;border-radius:14px;padding:.9rem 1.1rem;margin:1rem 0}
+  .warn{background:var(--bad-soft);border:1px solid #f0c2c2;border-radius:14px;padding:.9rem 1.1rem;margin:1rem 0}
+  .okbox{background:var(--ok-soft);border:1px solid #bfe0cc;border-radius:14px;padding:.9rem 1.1rem;margin:1rem 0}
+  .tip b,.warn b,.okbox b{font-family:'Kanit'}
+  /* ── ภาพประกอบ (จำลองหน้าจอ) ── */
+  figure{margin:1.4rem 0 2rem;background:#fff;border:1px solid var(--line);border-radius:18px;padding:1.1rem 1.2rem .9rem;box-shadow:0 3px 14px rgba(120,80,40,.07)}
+  figcaption{font-family:'Kanit';font-size:.9rem;color:var(--ink3);margin-top:.7rem;border-top:1px dashed var(--line);padding-top:.55rem}
+  figcaption b{color:var(--accent)}
+  .shot{border:2px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+  .shot .bar{background:var(--surface2);padding:.4rem .8rem;font-size:.78rem;color:var(--ink3);display:flex;gap:.5rem;align-items:center;border-bottom:1px solid var(--line)}
+  .shot .dots span{display:inline-block;width:9px;height:9px;border-radius:50%;background:#d9c8b4;margin-right:4px}
+  .shot .url{background:#fff;border:1px solid var(--line);border-radius:99px;padding:.05rem .8rem;font-size:.75rem}
+  .shot .body{padding:1rem}
+  .pill{display:inline-block;border-radius:999px;padding:.15rem .7rem;font-size:.8rem;font-weight:600;font-family:'Kanit'}
+  .p-ok{background:var(--ok-soft);color:var(--ok)} .p-warn{background:var(--gold-soft);color:var(--warn)}
+  .p-bad{background:var(--bad-soft);color:var(--bad)} .p-info{background:var(--info-soft);color:var(--info)}
+  .p-gray{background:var(--surface2);color:var(--ink2)}
+  .btn{display:inline-block;border-radius:10px;padding:.32rem .85rem;font-family:'Kanit';font-size:.86rem;font-weight:600;margin:.15rem .2rem .15rem 0}
+  .btn-main{background:var(--accent);color:#fff} .btn-ghost{border:1.5px solid var(--line);color:var(--ink2);background:#fff}
+  .btn-gold{background:var(--gold);color:#fff} .btn-blue{background:var(--info);color:#fff}
+  /* แท็บเว็บ */
+  .tabs{display:flex;gap:.35rem;flex-wrap:wrap;margin:.6rem 0}
+  .tab{border-radius:99px;padding:.28rem .8rem;font-size:.8rem;font-family:'Kanit';background:var(--surface2);color:var(--ink2);border:1px solid var(--line)}
+  .tab.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .tab .cnt{background:var(--gold);color:#fff;border-radius:99px;padding:0 .4rem;font-size:.72rem;margin-left:.25rem}
+  /* การ์ดออเดอร์ */
+  .ocard{border:1px solid var(--line);border-radius:14px;padding:.9rem 1rem;margin:.7rem 0;background:#fff}
+  .ocard .top{display:flex;gap:.7rem;align-items:flex-start;flex-wrap:wrap}
+  .ocard .no{font-family:'Kanit';font-weight:700;color:var(--accent)}
+  .ocard .who{font-size:.9rem;color:var(--ink2)}
+  .ostatus{display:flex;gap:4px;margin:.6rem 0 .2rem}
+  .ostatus i{flex:1;height:8px;border-radius:99px;background:var(--surface2)}
+  .ostatus i.f{background:var(--accent)}
+  .ocol{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:.6rem}
+  .olabel{font-size:.72rem;color:var(--ink3);font-family:'Kanit';margin-bottom:.15rem}
+  .oitem{display:flex;gap:.5rem;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:.35rem .6rem;margin:.25rem 0;font-size:.88rem}
+  .thumb{width:38px;height:38px;border-radius:8px;background:linear-gradient(135deg,#f3d9db,#e9c9cc);display:grid;place-items:center;font-size:1.1rem;flex:0 0 auto}
+  /* ไทม์ไลน์สถานะ */
+  .flow{display:flex;gap:.4rem;margin:1rem 0;flex-wrap:wrap}
+  .fstep{flex:1;min-width:110px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:.55rem .6rem;text-align:center;position:relative}
+  .fstep .n{width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:inline-grid;place-items:center;font-family:'Kanit';font-size:.85rem;margin-bottom:.25rem}
+  .fstep .t{font-family:'Kanit';font-weight:600;font-size:.85rem}
+  .fstep .c{font-size:.72rem;color:var(--ink3);line-height:1.5}
+  .fstep::after{content:'→';position:absolute;right:-13px;top:42%;color:#c9b8a4;font-weight:700;z-index:2}
+  .fstep:last-child::after{content:''}
+  /* เส้นทางสินค้า */
+  .route{display:flex;align-items:stretch;gap:.4rem;margin:.8rem 0;flex-wrap:wrap}
+  .rnode{flex:1;min-width:120px;border-radius:12px;padding:.6rem .5rem;text-align:center;border:1.5px solid var(--line);background:#fff}
+  .rnode .big{font-size:1.5rem}
+  .rnode .t{font-family:'Kanit';font-weight:600;font-size:.85rem}
+  .rnode .s{font-size:.72rem;color:var(--ink3)}
+  .rnode.hot{border-color:var(--accent);background:var(--accent-soft)}
+  .arrow{display:grid;place-items:center;color:#c9b8a4;font-weight:700;padding:0 .1rem}
+  /* หมายเลขกำกับภาพ */
+  .num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-family:'Kanit';font-size:.8rem;font-weight:700;margin-right:.3rem}
+  .note-item{display:flex;gap:.6rem;align-items:flex-start;margin:.45rem 0;font-size:.92rem}
+  /* ฟอร์มจำลอง */
+  .zone{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:.8rem .9rem;margin:.6rem 0}
+  .zone .zt{font-family:'Kanit';font-weight:600;color:var(--accent);border-bottom:2px solid var(--accent-soft);padding-bottom:.3rem;margin-bottom:.55rem;font-size:.95rem}
+  .frow{display:flex;gap:.6rem;flex-wrap:wrap}
+  .field{flex:1;min-width:150px;margin-bottom:.4rem}
+  .field label{display:block;font-size:.76rem;color:var(--ink2);font-weight:600}
+  .field .in{border:1px solid #e3d7c6;border-radius:9px;background:#fff;padding:.34rem .6rem;font-size:.85rem;color:var(--ink3);min-height:2.1rem}
+  .field .in.focus{border-color:var(--gold);color:var(--ink)}
+  /* QR จำลอง */
+  .qrbox{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+  .qr{width:120px;height:120px;border:1px solid var(--line);border-radius:10px;background:
+    repeating-conic-gradient(#2C1A17 0 25%, #fff 0 50%) 0 0/16px 16px;border:6px solid #fff;outline:1px solid var(--line)}
+  /* ตาราง */
+  table.t{width:100%;border-collapse:collapse;font-size:.9rem;margin:.6rem 0;background:#fff}
+  table.t th{background:var(--surface2);font-family:'Kanit';font-weight:600;text-align:left;padding:.5rem .6rem;border:1px solid var(--line);font-size:.84rem}
+  table.t td{padding:.45rem .6rem;border:1px solid var(--line);vertical-align:top}
+  table.t tr:nth-child(even) td{background:#fdfaf6}
+  .checklist{list-style:none;padding-left:0}
+  .checklist li{margin:.35rem 0;padding-left:1.9rem;position:relative}
+  .checklist li::before{content:'';position:absolute;left:0;top:.42em;width:1.05em;height:1.05em;border:2px solid #c9b8a4;border-radius:4px}
+  .checklist li.done::before{content:'✓';background:var(--ok);border-color:var(--ok);color:#fff;display:grid;place-items:center;font-size:.75em}
+  .kbd{background:var(--surface2);border:1px solid var(--line);border-bottom-width:2.5px;border-radius:6px;padding:.05rem .45rem;font-size:.85em;font-family:monospace}
+  .steps{counter-reset:st;padding-left:0;list-style:none}
+  .steps li{counter-increment:st;position:relative;padding-left:2.4rem;margin:.55rem 0}
+  .steps li::before{content:counter(st);position:absolute;left:0;top:.1em;width:1.7em;height:1.7em;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-family:'Kanit';font-weight:600;font-size:.9em}
+  @media print{
+    body{background:#fff;font-size:13px}
+    .page{max-width:100%;padding:0}
+    h2{page-break-before:always}
+    .cover{box-shadow:none}
+    figure,.ocard,.shot,.zone{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ═══════════ ปก ═══════════ -->
+<div class="cover">
+  <div class="logo">🎀🐱</div>
+  <h1>คู่มือระบบ Myrikaka ฉบับประกอบภาพ</h1>
+  <p>เว็บร้านพรีออเดอร์ฟิกเกอร์ญี่ปุ่น–จีน · สำหรับผู้ช่วยงานทุกคน</p>
+  <p style="font-size:.9rem">อ่านคู่กับเอกสาร "คู่มือ-ระบบ-Myrikaka-สำหรับผู้ช่วยงาน.md" — ฉบับนี้เน้น "เห็นภาพ" ทีละหน้าจอ</p>
+  <span class="ver">เวอร์ชันระบบ v.0906-r7 · 6 กันยายน 2569</span>
+</div>
+
+<div class="toc">
+  <b style="font-family:Kanit">📑 สารบัญ</b>
+  <ol>
+    <li><a href="#biz">ธุรกิจพรีออเดอร์ใน 1 ภาพ</a></li>
+    <li><a href="#route">เส้นทางสินค้า: ล็อตญี่ปุ่น (เรือ) vs ล็อตจีน (รถ)</a></li>
+    <li><a href="#flow">สถานะออเดอร์ทั้ง 7 ขั้น + กฎที่ระบบกันไว้</a></li>
+    <li><a href="#customer">ฝั่งลูกค้า: หน้าร้าน → ตะกร้า → ชำระเงิน → ออเดอร์ของฉัน</a></li>
+    <li><a href="#admin">ฝั่งพนักงาน: ออเดอร์หลังร้าน (หน้าทำงานหลัก)</a></li>
+    <li><a href="#slip">งานเงิน: ตรวจสลิป ทีละคลิก</a></li>
+    <li><a href="#ship">งานส่ง: ค่าส่งไทย → ยืนยันที่อยู่ → แพ็ก → เลขพัสดุ ทีละคลิก</a></li>
+    <li><a href="#newprod">เพิ่มสินค้าใหม่ + ปุ่ม ⚡ ทีละช่อง</a></li>
+    <li><a href="#money">เครื่องมือเงิน: แบ่งจ่าย · ค้างชำระ · เครดิต · รวมส่ง</a></li>
+    <li><a href="#roles">สิทธิ์ 6 บทบาท + เพิ่มพนักงานใหม่</a></li>
+    <li><a href="#tech">เบื้องหลัง: Netlify · Supabase · วิธีอัปเดตเว็บ</a></li>
+    <li><a href="#rules">กฎเหล็ก 8 ข้อ + เช็คลิสต์งานค้าง</a></li>
+  </ol>
+</div>
+
+<!-- ═══════════ 1. ธุรกิจ ═══════════ -->
+<h2 id="biz">1 · ธุรกิจพรีออเดอร์ใน 1 ภาพ</h2>
+<p class="lead">ของที่เราขายส่วนใหญ่<b>ยังไม่มีของจริงอยู่ในมือ</b> — ลูกค้าจ่ายมัดจำล่วงหน้า เราเอาเงินไปการันตีที่กับเว็บต้นทาง แล้วรอของเดินทางมาไทยหลายเดือน จึงขายได้เรื่อย ๆ ตลอดรอบ เว็บของเราออกแบบตามลำดับนี้ทั้งระบบ:</p>
+
+<figure>
+  <div class="route">
+    <div class="rnode hot"><div class="big">📢</div><div class="t">1 · ประกาศสินค้า</div><div class="s">เพิ่มสินค้าเข้าเว็บ<br>บอกเดือนวาง + วันปิดรับ</div></div>
+    <div class="arrow">→</div>
+    <div class="rnode hot"><div class="big">💰</div><div class="t">2 · ลูกค้าจ่ายมัดจำ</div><div class="s">สั่งในเว็บ + แนบสลิป<br>ร้านตรวจสลิป</div></div>
+    <div class="arrow">→</div>
+    <div class="rnode"><div class="big">🛒</div><div class="t">3 · ร้านกดของ</div><div class="s">ไปสั่งจริงที่เว็บ<br>ญี่ปุ่น/จีน (ใบสั่งซื้อ)</div></div>
+    <div class="arrow">→</div>
+    <div class="rnode"><div class="big">🚢</div><div class="t">4 · รอของเดินทาง</div><div class="s">เดือน ๆ → เรือ (JP)<br>หรือรถของจีน (CN)</div></div>
+    <div class="arrow">→</div>
+    <div class="rnode"><div class="big">🇹🇭</div><div class="t">5 · ถึงไทย</div><div class="s">คิดค่าส่งในไทย<br>ลูกค้าจ่ายส่วนที่เหลือ</div></div>
+    <div class="arrow">→</div>
+    <div class="rnode"><div class="big">📦</div><div class="t">6 · แพ็ก + ส่ง</div><div class="s">ถ่ายหลักฐานแพ็ก<br>กรอกเลขพัสดุ จบออเดอร์</div></div>
+  </div>
+  <figcaption><b>ภาพที่ 1</b> — วงจรธุรกิจพรีออเดอร์ทั้งหมด จุดสีแดง = ช่วงที่ใช้เว็บรุนแรงที่สุด (สร้างสินค้า + รับออเดอร์) ช่วงที่ 4 คือช่วง "รอ" ที่งานพนักงานจะเบาลงแต่ต้องคอยอัปเดตสถานะ</figcaption>
+</figure>
+
+<div class="tip"><b>💡 จำง่าย ๆ:</b> ออเดอร์ 1 ใบ ≠ ของ 1 ชิ้นพร้อมกันเสมอ ลูกค้าคนเดียวอาจสั่ง 3 ตัว คนละเดือนวาง — ระบบจะ<b>แยกออเดอร์ตามเดือนวางอัตโนมัติ</b>และเดินสถานะ<b>รายชิ้น</b>ให้อยู่แล้ว พนักงานไม่ต้องจดกระดาษ</div>
+
+<!-- ═══════════ 2. เส้นทาง ═══════════ -->
+<h2 id="route">2 · เส้นทางสินค้า: ญี่ปุ่น (เรือ) vs จีน (รถ)</h2>
+<p class="lead">ทุกสินค้าในระบบมีช่อง <b>"ล็อต"</b> บอกว่ามาจากเส้นทางไหน — <b>เวลาคิดค่าส่ง/บอกลูกค้าต้องดูตรงนี้ก่อนเสมอ</b> เพราะคนละเส้นทาง = คนละเวลา คนละค่าส่ง</p>
+
+<figure>
+  <h3 style="margin:.2rem 0 .4rem">🇯🇵 ล็อตญี่ปุ่น — มาทาง "เรือ"</h3>
+  <div class="route">
+    <div class="rnode"><div class="big">🖥️</div><div class="t">เว็บญี่ปุ่น</div><div class="s">AmiAmi · HobbyStock<br>ราคาเป็นเยน ¥</div></div>
+    <div class="arrow">→</div>
+    <div class="rnode"><div class="big">🏬</div><div class="t">โกดังญี่ปุ่น</div><div class="s">รวมของทั้งรอบ</div></div>
+    <div class="arrow">→</div>
+    <div class="rnode hot"><div class="big">🚢</div><div class="t">เรือ (รอบเรือ)</div><div class="s">ปกติหลายสัปดาห์<br>ระบุ "รอบขนส่ง" ได้ในระบบ</div></div>
+    <div class="arrow">→</div>
+    <div class="rnode"><div class="big">🏢</div><div class="t">โกดังไทย</div><div class="s">แจ้งลูกค้า "ถึงไทยแล้ว"</div></div>
+  </div>
+  <h3 style="margin:1.2rem 0 .4rem">🇨🇳 ล็อตจีน — มาทาง "รถของจีน"</h3>
+  <div class="route">
+    <div class="rnode"><div class="big">🖥️</div><div class="t">เว็บจีน</div><div class="s">Tmall · Bilibili<br>ราคาเป็นหยวน 元</div></div>
+    <div class="arrow">→</div>
+    <div class="rnode hot"><div class="big">🚚</div><div class="t">รถของจีน</div><div class="s">ข้ามประเทศทางรถ<br>เร็วกว่าเรือตามรอบ</div></div>
+    <div class="arrow">→</div>
+    <div class="rnode hot"><div class="big">🪵</div><div class="t">ตีลังไม้ (เลือกได้)</div><div class="s">ห่อไม้กันกระแทก<br>ลูกค้าเลือกตอนสั่ง + มีค่าตีลังไม้</div></div>
+    <div class="arrow">→</div>
+    <div class="rnode"><div class="big">🏢</div><div class="t">โกดังไทย</div><div class="s">แจ้งลูกค้า "ถึงไทยแล้ว"</div></div>
+  </div>
+  <figcaption><b>ภาพที่ 2</b> — สองเส้นทางหลัก จุดขอบแดง = จุดที่ต่างกันชัด (เรือ vs รถ, และตีลังไม้เฉพาะล็อตจีน) — ในการ์ดสินค้าระบบจะป้าย 🚫 "ไม่ตีลังไม้ (ลูกค้าเลือก)" ให้เห็นเองถ้าลูกค้าเลือกไม่ตี</figcaption>
+</figure>
+
+<table class="t">
+  <tr><th>เรื่อง</th><th>🇯🇵 ล็อตญี่ปุ่น</th><th>🇨🇳 ล็อตจีน</th></tr>
+  <tr><td>เงินต้นทาง</td><td>เยน (เรท ~0.255 บาท/เยน)</td><td>หยวน (เรท ~5.9 บาท/หยวน)</td></tr>
+  <tr><td>ค่าส่งมาไทย</td><td>คิดตาม<b>ขนาดสินค้า (มม.)</b> — ระบบมีตารางแนะนำให้อัตโนมัติตอนเพิ่มสินค้า</td><td>คิดเป็นก้อนต่อชิ้น (กรอกเอง)</td></tr>
+  <tr><td>พิเศษ</td><td>เว็บญี่ปุ่นมี "ราคาเต็ม" กับ "ราคาลดแล้ว" แยกกัน — ระบบเก็บ 2 ค่า</td><td>ของเคลือบ/แตกหักง่าย → แนะนำตีลังไม้</td></tr>
+</table>
+
+<!-- ═══════════ 3. สถานะ ═══════════ -->
+<h2 id="flow">3 · สถานะออเดอร์ทั้ง 7 ขั้น</h2>
+<p class="lead">เปิดแท็บ <b>🧾 ออเดอร์หลังร้าน</b> จะเห็นการ์ดออเดอร์ แต่ละใบมีแถบสถานะเดินตามนี้ — <b>ห้ามข้ามขั้น</b> ระบบจะล็อกบางขั้นไว้เอง</p>
+
+<figure>
+  <div class="flow">
+    <div class="fstep"><span class="n">1</span><div class="t">คำสั่งซื้อใหม่</div><div class="c">ลูกค้าสั่ง+จ่ายมัดจำ<br><span class="pill p-warn" style="font-size:.68rem">รอตรวจสลิป</span></div></div>
+    <div class="fstep"><span class="n">2</span><div class="t">ตรวจสอบสลิปแล้ว</div><div class="c">พนักงานเทียบยอดเงินจริง</div></div>
+    <div class="fstep"><span class="n">3</span><div class="t">สั่งซื้อสินค้าแล้ว</div><div class="c">กดของที่ต้นทางแล้ว<br><span class="pill p-gray" style="font-size:.68rem">ล็อกตามเดือนวาง</span></div></div>
+    <div class="fstep"><span class="n">4</span><div class="t">กำลังเดินทางมาไทย</div><div class="c">ออกจากโกดังแล้ว<br>ใส่รอบขนส่งได้</div></div>
+    <div class="fstep"><span class="n">5</span><div class="t">สินค้าถึงไทยแล้ว</div><div class="c"><span class="pill p-bad" style="font-size:.68rem">ต้องคิดค่าส่งก่อน!</span></div></div>
+    <div class="fstep"><span class="n">6</span><div class="t">เตรียมจัดส่ง</div><div class="c">แพ็ก + หลักฐานแพ็ก<br><span class="pill p-gray" style="font-size:.68rem">ต้องมีเลขพัสดุด้วย</span></div></div>
+    <div class="fstep"><span class="n">7</span><div class="t">จัดส่งในไทยแล้ว</div><div class="c">ลูกค้าได้ลิงก์ติดตาม<br>ปิดออเดอร์อัตโนมัติ</div></div>
+  </div>
+  <figcaption><b>ภาพที่ 3</b> — ไทม์ไลน์สถานะทั้ง 7 ขั้น (ป้ายสี = จุดที่ระบบ "บังคับ" หรือ "ล็อก" ไว้) — สถานะเดินได้ทั้ง "ทั้งใบ" และ "รายชิ้น" ในออเดอร์ที่ของมาไม่พร้อมกัน</figcaption>
+</figure>
+
+<div class="warn"><b>⚠️ 3 กฎที่ระบบบังคับจริง:</b> ① ขั้น 3→4 ถ้าของ<b>ยังไม่ถึงเดือนวางจำหน่าย</b> ระบบจะขึ้น ⚠️ ไม่ให้เดิน (ของยังไม่มีจริง) ② ขั้น 5 ต้อง<b>คิดค่าส่งในไทยก่อน</b> ถึงปล่อยให้ลูกค้ายืนยันที่อยู่/แจ้งยอดสุดท้ายได้ ③ ขั้น 6→7 ต้องมี<b>เลขพัสดุ + หลักฐานการแพ็ก</b>ครบ ระบบถึงปล่อยผ่าน</div>
+
+<!-- ═══════════ 4. ฝั่งลูกค้า ═══════════ -->
+<h2 id="customer">4 · ฝั่งลูกค้า — เดินตามจอทีละหน้า</h2>
+
+<h3>หน้าร้าน (ใครก็เข้าได้ ไม่ต้องสมัคร)</h3>
+<figure>
+  <div class="shot">
+    <div class="bar"><span class="dots"><span></span><span></span><span></span></span><span class="url">myrikaka.netlify.app</span></div>
+    <div class="body">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.6rem;border-bottom:2px solid var(--accent-soft);padding-bottom:.6rem">
+        <div><div style="font-size:.7rem;color:var(--ink3)">ระบบร้านค้าออนไลน์</div><div style="font-family:Kanit;font-weight:700;color:var(--accent);font-size:1.3rem">Myrikaka</div></div>
+        <div style="display:flex;gap:.6rem;font-size:.72rem;color:var(--ink2)">
+          <span>💱 เรทแลกเงิน <b style="display:block;text-align:center;font-size:1rem">0.255</b></span>
+          <span>🔍 เช็คสต็อก <b style="display:block;text-align:center;font-size:1rem">กดดูในหลังร้าน</b></span>
+          <span>⏰ ปิดรับก่อน <b style="display:block;text-align:center;font-size:1rem">7 วัน</b></span>
+        </div>
+      </div>
+      <div class="tabs">
+        <span class="tab on">🛍️ หน้าร้าน</span><span class="tab">🔍 รายละเอียด</span><span class="tab">🛒 ตะกร้า <span class="cnt">2</span></span><span class="tab">💳 ชำระเงิน</span><span class="tab">📋 ออเดอร์ของฉัน</span>
+      </div>
+      <div style="display:flex;gap:.8rem;flex-wrap:wrap">
+        <div class="ocard" style="flex:1;min-width:210px">
+          <div style="display:flex;gap:.6rem"><div class="thumb">🎀</div>
+            <div><b style="font-size:.9rem">ฟิกเกอร์ตัวอย่างสินค้า</b>
+            <div style="font-size:.76rem;color:var(--ink3)">ล็อตญี่ปุ่น · วาง 12/2026 · ปิดรับ 05/12/2569</div>
+            <div><span style="text-decoration:line-through;color:var(--ink3);font-size:.8rem">฿2,170</span> <b style="color:var(--accent)">฿1,845</b> <span class="pill p-bad" style="font-size:.68rem">-15%</span></div>
+            <div style="margin-top:.25rem"><span class="btn btn-main">🛒 หยิบใส่ตะกร้า</span><span class="pill p-ok" style="font-size:.7rem">รับพรีออเดอร์</span></div>
+          </div></div>
+        </div>
+        <div class="ocard" style="flex:1;min-width:210px">
+          <div style="display:flex;gap:.6rem"><div class="thumb">🐱</div>
+            <div><b style="font-size:.9rem">สินค้าตัวอย่างอีกใบ</b>
+            <div style="font-size:.76rem;color:var(--ink3)">ล็อตจีน · ตีลังไม้ได้</div>
+            <div><b style="color:var(--accent)">฿990</b> <span class="pill p-warn" style="font-size:.68rem">เหลือน้อย</span></div>
+            <div style="margin-top:.25rem"><span class="btn btn-main">🛒 หยิบใส่ตะกร้า</span></div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <figcaption><b>ภาพที่ 4</b> — หน้าร้าน: กรอบขวาบน = เรท/กติกา, ราคาที่<b>ขีดฆ่า = ราคาเต็มต้นทางแปลงเป็นบาท</b>, ตัวแดง = ราคาขายจริง ลูกค้ากดหยิบใส่ตะกร้าได้เลยโดยไม่ต้องสมัคร — ระบบจะดึงไปหน้าล็อกอินตอนกดสั่งจริงเท่านั้น</figcaption>
+</figure>
+
+<h3>หน้าชำระเงิน (หัวใจของฝั่งลูกค้า)</h3>
+<figure>
+  <div class="shot">
+    <div class="bar"><span class="dots"><span></span><span></span><span></span></span><span class="url">…/#pay</span></div>
+    <div class="body">
+      <h4 style="margin:.1rem 0 .5rem">💳 ชำระเงิน</h4>
+      <div class="zone"><div class="zt">3 · ช่องทางการโอน</div>
+        <span class="tab on">📱 PromptPay QR</span> <span class="tab">🏦 โอนเข้าบัญชี</span>
+        <div class="qrbox" style="margin-top:.6rem">
+          <div class="qr"></div>
+          <div>
+            <div style="font-family:Kanit;font-weight:700;color:var(--accent);font-size:1.25rem">฿920.00</div>
+            <div style="font-size:.85rem;color:var(--ink2)">MYRIKAKA SHOP · 0xx-xxx-xxxx</div>
+            <div style="font-size:.76rem;color:var(--ink3)">สแกนด้วยแอปธนาคาร ยอดระบุมาให้แล้ว กดยืนยันได้เลย</div>
+            <div style="font-size:.72rem;color:var(--gold);margin-top:.3rem">⚙️ ถ้ายังไม่กรอกเลขพร้อมเพย์ร้าน จ่อขึ้นข้อความเตือนแทน QR</div>
+          </div>
+        </div>
+      </div>
+      <div class="zone"><div class="zt">4 · แนบสลิป</div>
+        <div style="border:2px dashed var(--line);border-radius:12px;padding:.8rem;text-align:center;color:var(--ink3);font-size:.85rem">
+          🖼️ ลากรูปสลิปมาวาง หรือกดเลือกไฟล์ (ย่อเป็น 520px ให้อัตโนมัติ)</div>
+        <div style="font-size:.8rem;color:var(--ok);margin-top:.4rem">✓ ยอดครบแล้ว &nbsp;·&nbsp; <span style="color:var(--bad)">❌ สลิปซ้ำ (เคยใช้ไปแล้ว) ระบบเตือนทันที</span></div>
+      </div>
+    </div>
+  </div>
+  <figcaption><b>ภาพที่ 5</b> — หน้าชำระเงิน: QR จริงสร้างจากเลขพร้อมเพย์ร้าน + ยอดที่ต้องจ่าย (ลูกค้ากดยืนยันในแอปธนาคารได้เลย) · สลิปถูกย่อขนาดก่อนส่งขึ้นคลาวด์ · หลังส่ง สลิปจะเป็นสถานะ <b>"รอร้านตรวจ" เสมอ</b></figcaption>
+</figure>
+
+<h3>ออเดอร์ของฉัน (ลูกค้าเห็นเฉพาะของตัวเอง)</h3>
+<figure>
+  <div class="shot">
+    <div class="bar"><span class="dots"><span></span><span></span><span></span></span><span class="url">…/#myorders</span></div>
+    <div class="body">
+      <div class="ocard">
+        <div class="top"><span class="no">MK20261205-0001</span><span class="pill p-info" style="font-size:.72rem">กำลังเดินทางมาไทย 🚢</span></div>
+        <div class="ostatus"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i></div>
+        <div class="oitem"><div class="thumb">🎀</div>ฟิกเกอร์ A <span class="pill p-gray" style="font-size:.68rem">×1</span> <span class="pill p-warn" style="font-size:.68rem">รอบเรือ ก.พ.</span></div>
+        <div style="font-size:.8rem;color:var(--ink3);margin-top:.3rem">ชำระมาแล้ว ฿920 · คงเหลือ ฿925 (เก็บหลังของถึงไทย)</div>
+        <div><span class="btn btn-ghost">💳 ชำระเพิ่ม</span><span class="btn btn-ghost">📍 ที่อยู่</span></div>
+      </div>
+      <div style="font-size:.8rem;color:var(--ink3)">👆 ลูกค้ากด "ชำระเพิ่ม" เองได้ ระบบจะเอาไปหน้าชำระเงินเดิม + บันทึก log ทุกครั้ง</div>
+    </div>
+  </div>
+  <figcaption><b>ภาพที่ 6</b> — ไทม์ไลน์ 7 ช่องด้านล่างชื่อออเดอร์ = ความคืบหน้าจริง (ขั้นที่ 4 ของ 7) — ลูกค้า<b>ไม่มีทางเห็นออเดอร์คนอื่น</b> (ฐานข้อมูลกันสิทธิ์ไว้) และ<b>แก้ราคา/สถานะเองไม่ได้</b> (เซิร์ฟเวอร์บล็อก)</figcaption>
+</figure>
+
+<!-- ═══════════ 5. หลังร้าน ═══════════ -->
+<h2 id="admin">5 · ฝั่งพนักงาน — ออเดอร์หลังร้าน (หน้าทำงานหลัก)</h2>
+<p class="lead">ล็อกอินด้วยบัญชีพนักงานแล้วแท็บจะเพิ่มขึ้นมา ที่ต้องใช้บ่อยที่สุดคือ <b>🧾 ออเดอร์หลังร้าน</b> — ทุกออเดอร์เป็น "การ์ด" กางดูได้รายชิ้น</p>
+
+<figure>
+  <div class="shot">
+    <div class="bar"><span class="dots"><span></span><span></span><span></span></span><span class="url">…/#adminorders</span><span style="margin-left:auto">v.0906-r7 ✓ ใช้เวอร์ชันล่าสุด</span></div>
+    <div class="body">
+      <div class="tabs">
+        <span class="tab on">🎀 หลังร้าน</span><span class="tab">🧾 ออเดอร์หลังร้าน<span class="cnt">3</span></span><span class="tab">📥 นำเข้าออเดอร์</span><span class="tab">📚 ฐานข้อมูลสินค้า</span><span class="tab">🟠 เครื่องคิดราคาช้อปปี้</span><span class="tab">📊 ตารางข้อมูล</span><span class="tab">📋 ใบสั่งซื้อ<span class="cnt">5</span></span><span class="tab">🔔 งานติดตาม<span class="cnt">2</span></span><span class="tab">🔒 ประวัติ &amp; สิทธิ์</span>
+      </div>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin:.5rem 0">
+        <span class="pill p-ok">ทั้งหมด 12</span><span class="pill p-warn">ตรวจสลิป 2</span><span class="pill p-info">คิวจัดส่ง 1</span><span class="pill p-bad">เลยกำหนด 0</span>
+        <span style="flex:1"></span>
+        <span class="btn btn-gold" style="font-size:.75rem">📢 ประกาศถึงลูกค้า</span>
+        <span class="btn btn-ghost" style="font-size:.75rem">📥 นำเข้าออเดอร์เก่า</span>
+      </div>
+      <div class="ocard">
+        <div class="top">
+          <span class="no">MK20261205-0001</span>
+          <span class="who">คุณลูกค้า A · @line_a · 08x-xxx-1234</span>
+          <span style="flex:1"></span>
+          <span class="pill p-warn" style="font-size:.72rem">💰 สลิปรอตรวจ 1 รายการ</span>
+        </div>
+        <div class="ostatus"><i class="f"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="ocol">
+          <div><div class="olabel">รายการสินค้า</div>
+            <div class="oitem"><div class="thumb">🎀</div>ฟิกเกอร์ A <span class="pill p-gray" style="font-size:.66rem">ล็อต JP</span> <span class="pill p-gray" style="font-size:.66rem">×1</span></div>
+            <div class="oitem"><div class="thumb">🐱</div>ฟิกเกอร์ B <span class="pill p-gray" style="font-size:.66rem">ล็อต CN · ตีลังไม้ 🪵</span> <span class="pill p-gray" style="font-size:.66rem">×1</span></div>
+          </div>
+          <div>
+            <div class="olabel">เงิน</div>
+            <div style="font-size:.86rem">รวม <b>฿2,835</b> · ชำระแล้ว ฿920 · <span style="color:var(--gold)">ค้าง ฿1,915</span></div>
+            <div class="olabel" style="margin-top:.5rem">สถานะ (เดินทั้งใบ)</div>
+            <span class="tab on" style="font-size:.72rem">คำสั่งซื้อใหม่ ▾</span>
+            <div style="font-size:.72rem;color:var(--warn);margin-top:.3rem">⚠️ บางชิ้นเดินไม่พร้อมกันได้ (คนละเดือนวาง)</div>
+          </div>
+        </div>
+        <div style="margin-top:.5rem">
+          <span class="btn btn-main">🔍 รายละเอียด</span><span class="btn btn-ghost">✅ ตรวจสลิป</span><span class="btn btn-ghost">🧾 แท็กงาน @พนักงาน</span><span class="btn btn-ghost">🖨️ ใบปะหน้า</span>
+        </div>
+      </div>
+      <div style="text-align:center;padding:.5rem"><span class="btn btn-ghost">⬇️ แสดงออเดอร์เพิ่ม — เหลืออีก 12 ใบ (แสดงอยู่ 50 ใบ)</span></div>
+    </div>
+  </div>
+  <figcaption><b>ภาพที่ 7</b> — หน้าออเดอร์หลังร้าน: ป้ายสีบน = คิวที่ต้องทำ (ตรวจสลิป/จัดส่ง/เลยกำหนด) · แถบ 7 ช่อง = ความคืบหน้า · รายการสินค้าบอกล็อตและตีลังไม้ · ป้ายเหลือง = สิ่งที่ต้องทำก่อน · ปุ่มแสดงเพิ่ม = ระบบโหลดทีละ 50 ใบกันหน้าค้างเมื่อออเดอร์เยอะ</figcaption>
+</figure>
+
+<table class="t">
+  <tr><th>แท็บหลังร้าน</th><th>ใช้ทำอะไร · ใช้เมื่อไร</th></tr>
+  <tr><td>🎀 หลังร้าน</td><td>สร้าง/แก้สินค้า (ปุ่ม ⚡) + จัดการพนักงาน (เฉพาะเจ้าของ)</td></tr>
+  <tr><td>🧾 ออเดอร์หลังร้าน</td><td><b>หน้าหลัก</b> ตรวจสลิป เดินสถานะ ดูรายชิ้น แนบหลักฐานแพ็ก ปริ้นใบปะหน้า</td></tr>
+  <tr><td>📥 นำเข้าออเดอร์</td><td>อัปไฟล์นำออเดอร์เก่า/ช้อปปี้เข้าระบบ (ระบบเดาคอลัมน์ให้ ตรวจก่อนกดยืนยัน)</td></tr>
+  <tr><td>📚 ฐานข้อมูลสินค้า</td><td>ตารางสินค้า แก้ทีละช่องเร็ว ๆ / ซ่อนสินค้า (มีตัวแบ่งหน้า 100 แถว)</td></tr>
+  <tr><td>🟠 เครื่องคิดราคาช้อปปี้</td><td>คำนวณราคา + ดูวิธีคิดทีละบรรทัด + <b>ตั้งบัญชีรับเงิน (QR)</b> ท้ายหน้า</td></tr>
+  <tr><td>📊 ตารางข้อมูล</td><td>มุมมอง Excel แก้สด (แสดงทีละ 400 แถว กดแสดงเพิ่มได้)</td></tr>
+  <tr><td>📋 ใบสั่งซื้อ</td><td>รวมของที่ต้อง "กด" แยกตามล็อต/เว็บต้นทาง — ใช้ตอนจะไปสั่งของจริง</td></tr>
+  <tr><td>🔔 งานติดตาม</td><td>เคสที่ถูกแท็ก @ชื่อเรา จากทั้งร้าน</td></tr>
+  <tr><td>🔒 ประวัติ &amp; สิทธิ์</td><td>ใครทำอะไรเมื่อไร + ปุ่ม <b>⬇️ สำรองข้อมูลทั้งร้าน</b> + เพิ่มพนักงาน</td></tr>
+  <tr><td>📤 Google Sheets</td><td><b>โหมดจำลอง</b> — ปุ่มส่งยังไม่ได้ต่อชีตจริง ใช้ปุ่ม 📋 คัดลอกไปวางเองก่อน</td></tr>
+</table>
+
+<!-- ═══════════ 6. ตรวจสลิป ═══════════ -->
+<h2 id="slip">6 · งานเงิน: ตรวจสลิป ทีละคลิก</h2>
+<div class="warn"><b>⚠️ สำคัญที่สุดของงานนี้:</b> ระบบ<b>ไม่ได้เชื่อมธนาคาร</b> — สลิปที่ลูกค้าแนบมาต้องเปิดแอปธนาคารเทียบยอด/เวลาด้วยตาเองทุกใบ สถานะในระบบ "ผ่าน" แปลว่า "พนักงานยืนยันแล้ว" เท่านั้น (ระบบช่วยจับสลิปซ้ำในเครื่องเดียวกัน แต่จับข้ามลูกค้าไม่ได้)</div>
+
+<figure>
+  <div class="shot">
+    <div class="bar"><span class="dots"><span></span><span></span><span></span></span><span class="url">…/#adminorders → กด ✅ ตรวจสลิป ที่การ์ด</span></div>
+    <div class="body">
+      <div class="zone"><div class="zt">สลิปของออเดอร์ MK20261205-0001</div>
+        <div class="qrbox">
+          <div style="width:150px;height:95px;border:1px solid var(--line);border-radius:10px;display:grid;place-items:center;color:var(--ink3);font-size:.8rem;background:var(--surface)">🖼️ รูปสลิป<br>(กดขยายดูได้)</div>
+          <div style="font-size:.9rem;line-height:1.9">
+            ยอดที่ระบบตั้งรับ: <b>฿920.00</b><br>
+            สถานะ: <span class="pill p-warn" style="font-size:.72rem">รอตรวจ</span><br>
+            <span style="color:var(--ink3);font-size:.8rem">ลูกค้าอัปเมื่อ 06/09 19:42 · ช่องทาง PromptPay</span>
+          </div>
+        </div>
+        <div style="margin-top:.7rem">
+          <span class="num">1</span> เปิดแอปธนาคารเทียบ <b>ยอด+เวลา+ชื่อผู้โอน</b>
+          <span style="display:inline-block;width:1.2rem"></span>
+          <span class="num">2</span> กดผลลัพธ์:
+          <span class="btn btn-main">✓ ตรวจผ่าน</span> <span class="btn btn-ghost" style="color:var(--bad);border-color:var(--bad)">✗ ไม่ผ่าน (ใส่เหตุผล ลูกค้าเห็น)</span>
+        </div>
+        <div style="font-size:.8rem;color:var(--ok);margin-top:.5rem">→ ผ่าน = สถานะเงินกลายเป็น "✓ ตรวจแล้ว" และออเดอร์พร้อมเดินสถานะถัดไป (ระบบบันทึกใครกดไว้ในประวัติทุกครั้ง)</div>
+      </div>
+    </div>
+  </div>
+  <figcaption><b>ภาพที่ 8</b> — จอตรวจสลิป: สลิปลูกค้าเข้ามาเป็น "รอตรวจ" เสมอ (ระบบไม่เคยผ่านให้เอง) · พนักงานเทียบเงินจริงแล้วกดผ่าน/ไม่ผ่าน · เคสไม่ผ่านพิมพ์เหตุผลได้ ลูกค้าเห็นในหน้าออเดอร์ของเขา</figcaption>
+</figure>
+
+<div class="tip"><b>💡 เคสพิเศษ:</b> ลูกค้าโอนก้อนเดียวครอบหลายออเดอร์ → ใช้หน้า "บันทึกการชำระเงิน" แบ่งยอดลงทีละออเดอร์ได้ · โอนเกิน → ระบบเก็บเป็น <b>เครดิตลูกค้า</b> ไว้หักครั้งหน้า</div>
+
+<!-- ═══════════ 7. งานส่ง ═══════════ -->
+<h2 id="ship">7 · งานส่ง: ค่าส่งไทย → ยืนยันที่อยู่ → แพ็ก → เลขพัสดุ</h2>
+<p class="lead">ขั้นตอนนี้เริ่มเมื่อของ<b>ถึงไทยแล้ว</b> (สถานะ 5) — มีด่านบังคับเรียงกัน ทำตามลำดับนี้พอดี:</p>
+
+<figure>
+  <div class="route">
+    <div class="rnode hot"><div class="big">🧮</div><div class="t">คิดค่าส่งในไทย</div><div class="s">ใส่เลขในการ์ด<br>หรือกด 🎁 ส่งฟรี</div></div>
+    <div class="arrow">→</div>
+    <div class="rnode"><div class="big">📍</div><div class="t">ลูกค้ายืนยันที่อยู่</div><div class="s">ระบบเปิดให้เขายืนยัน<br>นับ 7 วัน = ใช้ที่อยู่เดิมเอง</div></div>
+    <div class="arrow">→</div>
+    <div class="rnode hot"><div class="big">📦</div><div class="t">แพ็ก + ถ่ายหลักฐาน</div><div class="s">＋ รูป (หลายรูป)<br>＋ คลิป (ได้ 1 คลิป)</div></div>
+    <div class="arrow">→</div>
+    <div class="rnode"><div class="big">🖨️</div><div class="t">ปริ้นใบปะหน้า</div><div class="s">ระบบทำสติ๊กเกอร์ให้</div></div>
+    <div class="arrow">→</div>
+    <div class="rnode hot"><div class="big">🚛</div><div class="t">กรอกเลขพัสดุ</div><div class="s">ระบบเดาขนส่ง + สร้าง<br>ลิงก์ติดตามให้ลูกค้า</div></div>
+  </div>
+  <figcaption><b>ภาพที่ 9</b> — เส้นทางงานส่ง จุดขอบแดง = จุดที่พนักงานต้องทำเอง · <b>ด่านบังคับของระบบ:</b> ต้องมีทั้ง "หลักฐานการแพ็ก" และ "เลขพัสดุ" ถึงเดินขั้น 6→7 ได้</figcaption>
+</figure>
+
+<table class="t">
+  <tr><th>สถานะค่าส่งในไทย (4 แบบ)</th><th>หมายถึง</th></tr>
+  <tr><td>⚠️ ยังไม่ได้คิด</td><td>ค่าเริ่มต้น — ช่องว่างหรือ 0 <b>ไม่ได้แปลว่าส่งฟรี</b> ต้องรีบเคลียร์ทุกใบหลังของถึงไทย</td></tr>
+  <tr><td>⏳ รอหารค่าส่งมาไทย</td><td>ยังไม่รู้ต้นทุนจริงของรอบนั้น (ต้องรอเฉลี่ยค่าส่งรอบเรือ/รถก่อน)</td></tr>
+  <tr><td>🎁 ส่งฟรี</td><td>พนักงานกดยืนยันเองว่าไม่คิด — คนละเรื่องกับ "ลืมใส่"</td></tr>
+  <tr><td>✓ คิดแล้ว</td><td>มีตัวเลขจริง → ระบบปล่อยให้ลูกค้ายืนยันที่อยู่ + แจ้งยอดสุดท้ายได้</td></tr>
+</table>
+
+<div class="okbox"><b>✨ ที่ระบบทำแทนอัตโนมัติ:</b> เดาบริษัทขนส่งจากเลขพัสดุ + สร้างลิงก์ติดตามให้ลูกค้ากดเอง · แจ้งยอดสุดท้ายหลังยืนยันที่อยู่ · รวมส่งอัตโนมัติถ้าลูกค้าคนเดียวกันที่อยู่เดียวกัน · ปิดออเดอร์เองเมื่อทุกชิ้นส่งครบ</div>
+
+<!-- ═══════════ 8. เพิ่มสินค้า ═══════════ -->
+<h2 id="newprod">8 · เพิ่มสินค้าใหม่ + ปุ่ม ⚡ (ทีละช่อง)</h2>
+<figure>
+  <div class="shot">
+    <div class="bar"><span class="dots"><span></span><span></span><span></span></span><span class="url">…/#admin → ฟอร์ม ➕ เพิ่มสินค้าใหม่</span></div>
+    <div class="body">
+      <div class="zone"><div class="zt">① ข้อมูลทั่วไป</div>
+        <div class="field"><label>ลิงก์สินค้าต้นทาง (วางได้หลายลิงก์ = หลายล็อต)</label><div class="in focus">https://www.hobbystock.jp/item/… ⏎ https://detail.tmall.com/…</div></div>
+        <span class="btn btn-main">⚡ ดึงข้อมูลอัตโนมัติ</span> <span style="font-size:.8rem;color:var(--ink3)">⏳ กำลังดึง… 6 วิ — ลิงก์ 1: ชื่อ ✓ · ราคา ✓ · วันวาง ✓ · รูป ✓</span>
+        <div class="frow" style="margin-top:.5rem">
+          <div class="field"><label>รหัสสินค้า (SKU)</label><div class="in focus">HBY-SCF-00001</div></div>
+          <div class="field"><label>ชื่อแสดง (ระบบแปลให้)</label><div class="in focus">Figure Name (EN)</div></div>
+          <div class="field"><label>ชื่อเรื่อง</label><div class="in focus">Jujutsu Kaisen</div></div>
+        </div>
+      </div>
+      <div class="zone"><div class="zt">② คุณลักษณะสินค้า</div>
+        <div class="frow">
+          <div class="field"><label>ล็อต (เดาจากลิงก์)</label><div class="in">ญี่ปุ่น 🇯🇵</div></div>
+          <div class="field"><label>เดือนวางจำหน่าย</label><div class="in focus">12/2026</div></div>
+          <div class="field"><label>วันปิดรับ</label><div class="in focus">2026-11-28</div></div>
+          <div class="field"><label>ขนาด (จากเว็บ)</label><div class="in">110mm</div></div>
+        </div>
+      </div>
+      <div class="zone"><div class="zt">③ ราคาและต้นทุน</div>
+        <div class="frow">
+          <div class="field"><label>ราคาต้นทาง (¥)</label><div class="in focus">4,208</div></div>
+          <div class="field"><label>ราคาเต็มต้นทาง — ไว้ขีดฆ่า (¥)</label><div class="in">4,950</div></div>
+          <div class="field"><label>ค่าส่งญี่ปุ่น→ไทย (แนะนำตามขนาด)</label><div class="in focus">900</div></div>
+          <div class="field"><label>ค่าส่งในไทย</label><div class="in">60</div></div>
+          <div class="field"><label>มัดจำ</label><div class="in">800</div></div>
+        </div>
+        <div style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:.5rem .8rem;font-size:.88rem">
+          💻 ราคาขายหน้าเว็บ: <b>฿1,845</b> &nbsp;·&nbsp; 🟠 ราคา Shopee: <b>฿2,864</b> <span style="font-size:.75rem;color:var(--ink3)">(แก้เองได้ — ปล่อยว่างให้ระบบคิดก็ได้)</span>
+        </div>
+      </div>
+      <span class="btn btn-main">💾 บันทึกสินค้า</span>
+    </div>
+  </div>
+  <figcaption><b>ภาพที่ 10</b> — ฟอร์มเพิ่มสินค้า 3 โซน: วางลิงก์ → กด ⚡ → ระบบเติมชื่อ/ราคา 2 ตัว/รูป/ขนาด/วันวาง/วันปิดรับให้เอง → <b>เช็คก่อนบันทึกเสมอ</b> (โดยเฉพาะวันปิดรับ) → กติกาภาษาของร้าน: ชื่อ+ซีรีส์เป็นอังกฤษ คำอธิบายเป็นไทย ตัดชื่อเว็บ/โฆษณาออก · ค่าส่งมาไทยจะถูกแนะนำตามขนาดสินค้าให้อัตโนมัติ</figcaption>
+</figure>
+
+<div class="warn"><b>⚠️ เคสที่ต้องรู้:</b> ถ้าสรุปผล ⚡ ขึ้น "แปลชื่อไม่สำเร็จ (ใช้ชื่อต้นฉบับ)" = ชื่อจะเป็นญี่ปุ่นค้าง ให้พิมพ์ชื่ออังกฤษเองในช่องชื่อแสดง · ถ้าลิงก์ไหน "อ่านไม่ได้" กด ⚡ ใหม่อีกครั้งได้เสมอ หรือกรอกมือ</div>
+
+<!-- ═══════════ 9. เครื่องมือเงิน ═══════════ -->
+<h2 id="money">9 · เครื่องมือเงินอื่น ๆ</h2>
+
+<h3>สูตรราคา Shopee (แท็บ 🟠 — อธิบายลูกค้าได้)</h3>
+<figure>
+  <div class="shot"><div class="bar"><span class="dots"><span></span><span></span><span></span></span><span class="url">…/#spcalc</span></div>
+  <div class="body">
+    <table class="t" style="margin:0">
+      <tr><th>ขั้นตอน</th><th>ตัวอย่าง</th></tr>
+      <tr><td>ค่าของแปลงเป็นบาท (¥4,208 × 0.255)</td><td>฿1,073</td></tr>
+      <tr><td>+ ค่าส่งมาไทย + ค่าส่งในไทย</td><td>+ 900 + 60</td></tr>
+      <tr><td>+ ค่าเอกสารใบจอง</td><td>+ 10</td></tr>
+      <tr><td>× ตัวคูณช้อปปี้ (ค่าธรรมเนียมรวม ~33.12% → ×1.495)</td><td>≈ <b>฿3,066</b></td></tr>
+    </table>
+    <div style="font-size:.8rem;color:var(--ink3);margin-top:.4rem">มีปุ่ม "ดูวิธีคิด" กางรายละเอียดทีละบรรทัดให้ลูกค้าดูได้เลย · ตัวเลขค่าธรรมเนียมแก้ได้ที่หน้าเดียวกัน (เจ้าของเท่านั้น)</div>
+  </div></div>
+  <figcaption><b>ภาพที่ 11</b> — เหตุผลที่ราคาช้อปปี้แพงกว่าเว็บ: ช้อปปี้หักคอมมิชชัน 16.05% + ค่าบริการ 8.56% + SPayLater 6.96% + Escrow 1.5% + โครงสร้างพื้นฐาน ~0.05% — ร้านต้องบวกกลับจึงจะได้ยอดตามตั้ง</figcaption>
+</figure>
+
+<h3>ค้างชำระ · เครดิต · รวมส่ง</h3>
+<table class="t">
+  <tr><th>เครื่องมือ</th><th>ทำอะไร · ใช้เมื่อไร</th></tr>
+  <tr><td>💰 ค้างชำระ</td><td>แท็บแยกตามเดือนครบกำหนด + แท็บ "รอชำระหลังสินค้าถึงไทย" — ใช้ไล่เก็บส่วนที่เหลือเป็นรอบ ๆ</td></tr>
+  <tr><td>💳 บันทึกการชำระ (แบ่งจ่าย)</td><td>ลูกค้าโอนก้อนเดียวครอบหลายใบ → แบ่งยอดลงทีละออเดอร์ ระบบคิดส่วนตามสัดส่วนให้</td></tr>
+  <tr><td>🏦 เครดิตลูกค้า</td><td>โอนเกิน/ทอน → เก็บเป็นเครดิต กดหักกับออเดอร์หน้าได้</td></tr>
+  <tr><td>📦 รวมส่ง</td><td>ลูกค้ายื่นคำขอรวมส่ง → เข้าคิวให้พนักงานกดรวมเป็นใบเดียว (แยกกลับได้ถ้าเปลี่ยนใจ)</td></tr>
+</table>
+
+<!-- ═══════════ 10. สิทธิ์ ═══════════ -->
+<h2 id="roles">10 · สิทธิ์ 6 บทบาท + วิธีเพิ่มพนักงาน</h2>
+<figure>
+  <div class="route">
+    <div class="rnode hot"><div class="big">👑</div><div class="t">เจ้าของร้าน</div><div class="s">ทุกอย่าง ตั้งค่า/สำรอง/ลบ<br>(Ning)</div></div>
+    <div class="arrow">·</div>
+    <div class="rnode"><div class="big">🧭</div><div class="t">ผู้จัดการ</div><div class="s">ดูแลทุกงาน เห็นยอดรวม<br>แก้ตั้งค่าไม่ได้</div></div>
+    <div class="arrow">·</div>
+    <div class="rnode"><div class="big">💵</div><div class="t">แอดมินการเงิน</div><div class="s">ตรวจสลิป/ยืนยันจ่าย<br>ไม่เห็นยอดรวม</div></div>
+    <div class="rnode"><div class="big">🛒</div><div class="t">แอดมินสั่งซื้อ</div><div class="s">ใบสั่งซื้อ+สินค้า<br>ไม่เห็นยอดเงิน</div></div>
+    <div class="rnode"><div class="big">📦</div><div class="t">แอดมินคลัง</div><div class="s">รอบขนส่ง/พัสดุ<br>ไม่เห็นยอดเงิน</div></div>
+    <div class="rnode"><div class="big">💬</div><div class="t">แอดมินแช็ต</div><div class="s">ลูกค้า+สถานะ<br>ไม่เห็นยอดเงิน</div></div>
+  </div>
+  <figcaption><b>ภาพที่ 12</b> — สิทธิ์ออกแบบให้ "เห็นเท่าที่จำเป็น" — เรื่องเงินเห็นเฉพาะเจ้าของ/ผู้จัดการ/ฝ่ายการเงิน · แท็บบางแท็บจะหายไปเองตามบทบาท</figcaption>
+</figure>
+<div class="steps" style="max-width:640px">
+  <li>ให้พนักงานใหม่<b>สมัครบัญชีเอง</b>บนเว็บร้าน (ปุ่มสมัครใหม่ หน้าล็อกอิน หรือเข้าด้วย LINE/Google)</li>
+  <li>เจ้าของเปิดแท็บ <b>🔒 ประวัติ &amp; สิทธิ์</b> → พิมพ์อีเมลเพื่อนพนักงานในช่องค้นหา</li>
+  <li>เลือกบทบาทให้ถูก → เปิดสวิตช์ "เปิดใช้" → กดบันทึก (ทุกอย่างเข้าประวัติการทำงาน)</li>
+</div>
+
+<!-- ═══════════ 11. เบื้องหลัง ═══════════ -->
+<h2 id="tech">11 · เบื้องหลัง 3 ตัว + วิธีอัปเดตเว็บ</h2>
+<figure>
+  <div class="route">
+    <div class="rnode"><div class="big">🌐</div><div class="t">Netlify</div><div class="s">ที่ฝากเว็บ<br>myrikaka.netlify.app</div></div>
+    <div class="arrow">⇄</div>
+    <div class="rnode hot"><div class="big">📄</div><div class="t">ไฟล์โค้ด (1 ไฟล์)</div><div class="s">myrikaka-deploy/<br>index.html — ในเครื่องร้าน</div></div>
+    <div class="arrow">⇄</div>
+    <div class="rnode"><div class="big">☁️</div><div class="t">Supabase</div><div class="s">ฐานข้อมูล+รูป/สลิป/คลิป<br>+ เซิร์ฟเวอร์ดึงข้อมูล/แจ้งเตือน</div></div>
+  </div>
+  <figcaption><b>ภาพที่ 13</b> — เว็บทั้งระบบคือ "ไฟล์เดียว" + ฐานข้อมูลกลาง — เปิดจากเครื่องไหน/มือถือไหนก็เห็นข้อมูลเดียวกันแบบสด ๆ (คนอื่นแก้ เราเห็นภายใน ~1 วินาที)</figcaption>
+</figure>
+<div class="steps" style="max-width:680px">
+  <li>แก้โค้ด (เจ้าของ + Claude เท่านั้น) → บันทึกที่ <span class="kbd">myrikaka-deploy/index.html</span></li>
+  <li>ลาก<b>โฟลเดอร์</b> <span class="kbd">myrikaka-deploy</span> ทั้งก้อน → วางที่ Netlify → Deploys (ห้ามลากไฟล์เดี่ยว = 404)</li>
+  <li>เปิดเว็บ กด <span class="kbd">⌘+Shift+R</span> → ดูหลังร้าน มุมหัวเว็บต้องขึ้นเลขเวอร์ชันใหม่ (ตอนนี้ <b>v.0906-r7</b>) ถ้าไม่ขึ้น = แคชเก่า รีเฟรชอีกที</li>
+</div>
+
+<!-- ═══════════ 12. กฎเหล็ก ═══════════ -->
+<h2 id="rules">12 · กฎเหล็ก 8 ข้อ + เช็คลิสต์งานค้าง</h2>
+<div class="warn" style="font-size:.95rem">
+  <b>1.</b> สลิปทุกใบเทียบแอปธนาคารด้วยตาเอง — "ผ่าน" ในระบบ = คนกดยืนยัน ไม่ใช่ธนาคารยืนยัน<br>
+  <b>2.</b> ค่าส่ง 0 = ยังไม่ได้คิด ไม่ใช่ส่งฟรี (ส่งฟรีต้องกดปุ่มเฉพาะ)<br>
+  <b>3.</b> ห้ามข้ามสถานะ — ระบบล็อกไว้เพราะของยังไม่มาจริง<br>
+  <b>4.</b> ห้ามกดปุ่ม 🧪 "สร้างออเดอร์ทดสอบ" ในหน้าใช้งานจริง (สร้างข้อมูลปลอม 29 ใบเข้าระบบจริง)<br>
+  <b>5.</b> สินค้าที่มีออเดอร์ผูกอยู่จะลบไม่ได้ — ใช้ "ซ่อน" แทน<br>
+  <b>6.</b> สำรองข้อมูลทุก ≤ 7 วัน (🔒 ประวัติ → ⬇️ เก็บไฟล์ไว้ Drive ด้วย) — ระบบเตือนสีแดงเมื่อเกิน<br>
+  <b>7.</b> ห้ามแก้ไฟล์โค้ดเอง — ให้เจ้าของทำกับ Claude ทุกครั้ง<br>
+  <b>8.</b> ข้อมูลสดทุกเครื่อง — ถ้าเปิดหน้าจอทิ้งไว้นาน รีเฟรชก่อนทำงานต่อ
+</div>
+
+<h3>เช็คลิสต์งานที่ค้าง (เจ้าของทำ)</h3>
+<ul class="checklist">
+  <li class="done">โค้ดเวอร์ชันใหม่ v.0906-r7 ขึ้นเว็บแล้ว (6/9/26)</li>
+  <li>รัน SQL ไฟล์ <span class="kbd">schema-v4.sql</span> — Supabase → SQL Editor → วาง → Run (ให้สลิปลูกค้าขึ้นคลาวด์ = ระบบไม่อืดเมื่อออเดอร์เยอะ)</li>
+  <li>กรอก <b>เลขพร้อมเพย์/บัญชีร้านจริง</b> ท้ายแท็บ 🟠 → QR ชำระเงินใช้ได้จริง</li>
+  <li>(ถ้าต้องการ) เปิดแจ้งเตือน LINE ออเดอร์ใหม่ — ตามคู่มือ <span class="kbd">คู่มือ-แจ้งเตือน-LINE.md</span></li>
+  <li>ทดสอบ ⚡ ด้วยล็อกอินจริง (วางลิงก์สินค้าจริง 1 ลิงก์ ดูสรุปผล)</li>
+  <li>เพิ่มสินค้าตัวแรกจริง → เริ่มขายผ่านหน้าเว็บ 🎉</li>
+</ul>
+
+<div class="okbox"><b>🎀 สุดท้าย:</b> เจ้าของร้านดูแลระบบนี้ร่วมกับผู้ช่วย AI "Claude Code" (เปิด Terminal พิมพ์ <span class="kbd">claude</span> แล้วคุยภาษาไทยได้เลย) — ปัญหาอะไรจดไว้ หรือให้ Claude ดูได้ทุกเรื่องค่ะ</div>
+
+<p style="text-align:center;color:var(--ink3);font-size:.8rem;margin-top:3rem">คู่มือฉบับประกอบภาพ v.0906-r7 · สร้าง 6/9/2569 จากโค้ดตัวจริงทุกหน้าจอ · พิมพ์เป็น PDF ได้จากเมนูพิมพ์ของเบราว์เซอร์</p>
+
+</div>
+</body>
+</html>
