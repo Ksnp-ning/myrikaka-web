@@ -117,7 +117,8 @@ function pickPriceJpy(html: string): number {
 /* v2.2: ราคาเต็ม (標準価格) — เก็บไว้ขีดฆ่าบนหน้าสินค้า ให้ลูกค้าเห็นว่าลดจากราคาเท่าไร */
 function pickFullPriceJpy(html: string): number {
   const text0 = html.replace(/<[^>]+>/g, ' ');
-  const std = /標準価格(?:（|\()[^）)]*(?:\)|）)[^\d]{0,30}([\d][\d,]{2,9})\s*円/.exec(text0);
+  const std = /標準価格(?:（|\()[^）)]*(?:\)|）)[^\d]{0,30}([\d][\d,]{2,9})\s*円/.exec(text0)
+           || /定価[^\d]{0,20}([\d][\d,]{2,9})\s*円/.exec(text0);   /* AmiAmi ใช้ป้าย 定価 */
   if (std) return num(std[1]);
   // ไม่มีป้าย 標準価格 → ตัวแรกของหน้ามักเป็นราคาเต็ม (ราคาขายจะถูกเลือกด้วยป้าย 販売価格 ก่อนแล้ว)
   const cands = [...text0.matchAll(/(?:￥|¥|税込[^\d]{0,6})\s*([\d][\d,]{2,9})|([\d][\d,]{2,9})\s*円/g)]
@@ -155,13 +156,25 @@ function pickStatus(html: string): { status: Result['status']; statusText: strin
   return { status: 'unknown', statusText: '' };
 }
 
-/* ---------- อ่านเดือนวางจำหน่าย → MM/YYYY ---------- */
+/* ---------- อ่านเดือนวางจำหน่าย → MM/YYYY ----------
+   ยึดป้ายกำกับ (発売日/Release Date) ก่อนเสมอ — ห้ามหยิบวันที่แปลกปลอมบนหน้าเว็บ
+   (เคยพัง: ได้ 09/2026 = เดือนที่หน้าอัปเดต ทั้งที่วางจำหน่าย 11/2027) */
 function pickRelease(html: string): string {
   const text = decode(html.replace(/<[^>]+>/g, ' '));
-  let m = /(20\d{2})\s*年\s*(\d{1,2})\s*月/.exec(text);
-  if (m) return `${String(+m[2]).padStart(2, '0')}/${m[1]}`;
-  m = /(?:release|発売|発送)[^\d]{0,20}(20\d{2})[-/.](\d{1,2})/i.exec(text);
-  if (m) return `${String(+m[2]).padStart(2, '0')}/${m[1]}`;
+  const mk = (y: string, mo: number) => `${String(mo).padStart(2, '0')}/${y}`;
+  let m = /(?:発売日|発売予定日|発売予定|発売時期|発売)[^\d]{0,14}(20\d{2})\s*[年\/\-.]\s*(\d{1,2})/.exec(text);
+  if (m) return mk(m[1], +m[2]);
+  m = /Release\s*Date:?\s*([A-Za-z]{3})[a-z]*\.?[-\s.,]*(\d{4})/i.exec(text);
+  if (m) {
+    const i = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
+      .indexOf(m[1].slice(0,3).toLowerCase());
+    if (i >= 0) return mk(m[2], i + 1);
+  }
+  /* ปีเดือนล้วน 2027年11月 เท่านั้น — ถ้าตามด้วย "วัน" (2026年9月7日) = วันที่ของหน้าเว็บ ไม่ใช่วันวางจำหน่าย */
+  m = /(20\d{2})\s*年\s*(\d{1,2})\s*月/.exec(text);
+  if (m && +m[2] >= 1 && +m[2] <= 12 && !/^\s*\d{0,2}\s*日/.test(text.slice((m.index ?? 0) + m[0].length))) return mk(m[1], +m[2]);
+  m = /(?:release|発売)[^\d]{0,20}(20\d{2})[-/.](\d{1,2})/i.exec(text);
+  if (m) return mk(m[1], +m[2]);
   m = /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+(20\d{2})\b/i.exec(text);
   if (m) {
     const i = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
@@ -278,6 +291,8 @@ async function fromAmiAmi(url: string): Promise<Result> {
         name: it.gname || it.sname || '',
         priceJpy: Number(it.price ?? it.c_price_taxed ?? 0) || 0,
         fullPriceJpy: Number(it.list_price ?? 0) || undefined,
+        discountPct: (Number(it.list_price) > Number(it.price ?? 0))
+          ? Math.round((1 - Number(it.price) / Number(it.list_price)) * 100) : undefined,
         status: soldout ? 'soldout' : closed ? 'closed' : 'open',
         statusText: soldout ? '売り切れ' : closed ? '受付終了' : '予約受付中',
         release: it.releasedate ? String(it.releasedate).replace(/^(\d{4})[-/](\d{2}).*/, '$2/$1') : '',
@@ -291,8 +306,13 @@ async function fromAmiAmi(url: string): Promise<Result> {
   return await fromAmiAmiReader(url);
 }
 
-/* v2.3: AmiAmi ผ่านตัวอ่าน r.jina.ai — ใช้เมื่อ API ถูกบล็อก (เช่น 403 จากบางภูมิภาค)
-   ผ่านการทดสอบกับหน้าจริง: ได้ชื่ออังกฤษ ราคา ราคาเต็ม Release สถานะ Pre-order */
+/* v2.4: AmiAmi ผ่านตัวอ่าน r.jina.ai — ใช้เมื่อ API ถูกบล็อก (เช่น 403 จากบางภูมิภาค)
+   กติกาที่ทำให้อ่านได้จริง:
+   • ลิงก์เป้าหมายต้อง encode ทั้งก้อน — ไม่งั้น query ของสินค้า (เช่น &page=top ใน amiami.jp)
+     ไปดองกับ query ของ r.jina.ai แล้วโดนปัดตก 400 ทันที
+   • อ่านเวอร์ชันอังกฤษ (amiami.com/eng) ด้วย gcode เดิม — ป้ายราคา/วันวางชัดและครบกว่า
+   • ราคา: หน้าลดราคาแสดงคู่ "15,800JPY 14,220 JPY Save 1,580 JPY" = เต็ม → ขายจริง
+     และห้ามให้ "List Price" หลุดมาเป็นราคาขาย */
 function monthFromEn(s: string): string {
   const i = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
     .indexOf(s.slice(0, 3).toLowerCase());
@@ -300,35 +320,49 @@ function monthFromEn(s: string): string {
 }
 async function fromAmiAmiReader(url: string): Promise<Result> {
   const base: Result = { url, site: 'amiami', ok: false };
-  try {
-    const r = await grab('https://r.jina.ai/' + url, { 'Accept': 'text/plain' });
-    if (r.status !== 200) return { ...base, note: 'ตัวอ่าน AmiAmi ตอบรหัส ' + r.status };
-    const t = r.body;
-    const title = (/(?:^|\n)Title:\s*(.+)(?:\n|$)/.exec(t) || [])[1] || '';
-    const price = /Price\s*([\d,]+)\s*JPY/.exec(t);
-    const full  = /List Price\s*([\d,]+)\s*JPY/.exec(t);
-    const relM  = /Release Date:?\s*([A-Z][a-z]{2})-(\d{4})/.exec(t);
-    const imgM  = /https:\/\/img\.amiami\.com\/images\/product\/[^\s"\)\]]+/.exec(t);
-    const low = t.toLowerCase();
-    const status: Result['status'] = /sold\s*out/.test(low) ? 'soldout'
-      : /(pre-?order|backorder)/.test(low) ? 'open'
-      : /(closed|ended)/.test(low) ? 'closed' : 'unknown';
-    const name = title.replace(/\s*\(Pre-order\)\s*$/i, '').trim();
-    if (!name && !price) return { ...base, note: 'อ่านหน้า AmiAmi ผ่านตัวอ่านไม่ได้' };
-    return {
-      ...base, ok: !!(name || price),
-      name: name || undefined,
-      priceJpy: price ? num(price[1]) : undefined,
-      fullPriceJpy: full ? num(full[1]) : undefined,
-      status,
-      statusText: status === 'open' ? 'Pre-order' : status === 'soldout' ? 'Sold Out' : '',
-      release: relM ? `${monthFromEn(relM[1])}/${relM[2]}` : undefined,
-      image: imgM ? imgM[0] : undefined,
-      note: 'จากหน้าเว็บ AmiAmi (ผ่านตัวอ่าน)',
-    };
-  } catch (e) {
-    return { ...base, note: 'ตัวอ่าน AmiAmi ล่ม: ' + String((e as Error).message || e) };
+  const code = (/[?&](?:gcode|scode)=([^&#]+)/i.exec(url) || [])[1] || '';
+  const target = code ? 'https://www.amiami.com/eng/detail/?gcode=' + code : url;
+  let t = '';
+  for (const u of [target, url]) {
+    try {
+      const r = await grab('https://r.jina.ai/' + encodeURIComponent(u), { 'Accept': 'text/plain' });
+      if (r.status === 200 && r.body.length > 400) { t = r.body; break; }
+    } catch { /* ลองลิงก์ถัดไป */ }
   }
+  if (!t) return { ...base, note: 'ตัวอ่าน AmiAmi ตอบไม่สำเร็จ' };
+  const title = (/(?:^|\n)Title:\s*(.+)(?:\n|$)/.exec(t) || [])[1] || '';
+  /* ราคาคู่ "15,800JPY 14,220 JPY Save 1,580 JPY" — ตัวหลังคือราคาขายจริง ตัวหน้าคือราคาเต็ม (ขีดฆ่า) */
+  const pair = /([\d,]{3,9})\s*JPY\s+([\d,]{3,9})\s*JPY\s+Save/i.exec(t);
+  let price = pair ? num(pair[2]) : 0;
+  let full  = pair ? num(pair[1]) : num((/List\s+Price\s*([\d,]+)\s*JPY/i.exec(t) || [])[1] || '');
+  if (!price) {
+    /* ตัด "List Price … JPY" ทิ้งก่อน — ไม่งั้น regex "Price … JPY" ชนคำว่า List Price ได้ราคาเต็มมาแทน */
+    const p = /Price\s*([\d,]+)\s*JPY/.exec(t.replace(/List\s+Price\s*[\d,]+\s*JPY/ig, ' '));
+    if (p) price = num(p[1]);
+  }
+  if (full <= price) full = 0;
+  const relM = /Release\s*Date:?\s*([A-Za-z]{3})[a-z]*\.?[-\s.,]*(\d{4})/.exec(t);
+  const imgM = /https:\/\/img\.amiami\.com\/images\/product\/(?:main|thumb\d*)\/[^\s"\)\]]+/.exec(t);
+  const makerM = /Brand\[([^\]]+)\]/.exec(t);
+  const low = t.toLowerCase();
+  const status: Result['status'] = /sold\s*out/.test(low) ? 'soldout'
+    : /(pre-?order|backorder)/.test(low) ? 'open'
+    : /(closed|ended)/.test(low) ? 'closed' : 'unknown';
+  const name = title.replace(/\s*\(Pre-order\)\s*$/i, '').trim();
+  if (!name && !price) return { ...base, note: 'อ่านหน้า AmiAmi ผ่านตัวอ่านไม่ได้' };
+  return {
+    ...base, ok: !!(name || price),
+    name: name || undefined,
+    priceJpy: price || undefined,
+    fullPriceJpy: full || undefined,
+    discountPct: (price && full > price) ? Math.round((1 - price / full) * 100) : undefined,
+    status,
+    statusText: status === 'open' ? 'Pre-order' : status === 'soldout' ? 'Sold Out' : '',
+    release: relM ? `${monthFromEn(relM[1])}/${relM[2]}` : undefined,
+    image: imgM ? imgM[0] : undefined,
+    maker: makerM ? decode(makerM[1]).trim() || undefined : undefined,
+    note: 'จากหน้าเว็บ AmiAmi (ผ่านตัวอ่าน)',
+  };
 }
 
 // เว็บทั่วไปที่ส่ง HTML มาจริง (HobbyStock, Good Smile, Mandarake, Suruga-ya, ร้านญี่ปุ่นอื่น)
@@ -431,7 +465,9 @@ async function imageToDataUrl(imgUrl: string): Promise<{ ok: boolean; dataUrl?: 
   try {
     const r = await fetch(imgUrl, {
       signal: ctl.signal, redirect: 'follow',
-      headers: { 'User-Agent': UA, 'Accept': 'image/*,*/*;q=0.8', 'Referer': (() => { try { return new URL(imgUrl).origin; } catch { return ''; } })() },
+      headers: { 'User-Agent': UA, 'Accept': 'image/*,*/*;q=0.8',
+        /* AmiAmi ตรวจ Referer แบบเข้ม — ต้องอ้างหน้าเว็บแม่ ไม่ใช่โดเมนของรูป */
+        'Referer': /amiami/.test(imgUrl) ? 'https://www.amiami.com/' : (() => { try { return new URL(imgUrl).origin; } catch { return ''; } })() },
     });
     if (!r.ok) return { ok: false, error: 'เว็บตอบรหัส ' + r.status };
     const type = r.headers.get('content-type') || '';
