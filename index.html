@@ -9872,7 +9872,7 @@ function renderAdmin(){
   const live = products.filter(p=>!p.hidden).sort((a,b)=>(b.id||0)-(a.id||0));  /* ใหม่ → เก่า */
   const shown = live.filter(p=>adminMatch(p, adminQ));
   document.getElementById('s-admin').innerHTML =
-  `<div class="shopnav"><div class="logo">🎀 Admin Dashboard <span style="font-size:.66rem;font-weight:400;opacity:.65;background:rgba(255,255,255,.35);border-radius:99px;padding:.1rem .5rem;">v.0906-r7</span></div><div class="links"><span>จัดการสินค้า Myrikaka</span></div></div>
+  `<div class="shopnav"><div class="logo">🎀 Admin Dashboard <span style="font-size:.66rem;font-weight:400;opacity:.65;background:rgba(255,255,255,.35);border-radius:99px;padding:.1rem .5rem;">v.0907-r8</span></div><div class="links"><span>จัดการสินค้า Myrikaka</span></div></div>
   ${staffBar()}
   <div class="statrow">
     <div class="stat"><div class="k">สินค้าทั้งหมด</div><div class="v">${live.length}</div></div>
