@@ -1,12 +1,12 @@
 # 🎀 Myrikaka Web — ระบบร้านพรีออเดอร์ฟิกเกอร์
 
-เว็บร้าน + ระบบหลังบ้านทั้งหมดอยู่ใน **ไฟล์เดียว**: [`site/index.html`](site/index.html)
+เว็บร้าน + ระบบหลังบ้านทั้งหมดอยู่ใน **ไฟล์เดียว**: [`index.html`](index.html)
 เว็บจริง: https://myrikaka.netlify.app · เวอร์ชันปัจจุบัน: **v.0906-r7**
 
 ## โครงสร้าง
 
 ```
-site/index.html                     ← โค้ดทั้งระบบ (HTML+CSS+JS ไฟล์เดียว)
+index.html                     ← โค้ดทั้งระบบ (HTML+CSS+JS ไฟล์เดียว)
 supabase/functions/stock/index.ts   ← Edge Function ดึงข้อมูลสินค้าจากเว็บต้นทาง (ติดตั้งแล้ว)
 supabase/functions/notify/index.ts  ← Edge Function แจ้งเตือน LINE (รอตั้ง Secrets)
 supabase/sql/schema-v4.sql          ← SQL ที่ยังต้องรัน (สิทธิ์สลิปลูกค้าอัป Storage)
